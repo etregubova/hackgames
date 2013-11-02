@@ -40,7 +40,7 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on('player:added', function (newPlayer, callback) {
-        console.log('Event received "player:added "' + newPlayer)
+        console.log('Event received "player:added "' + newPlayer);
 
         socket.set('player', newPlayer.name);   // save player name in socket
 
@@ -84,11 +84,27 @@ io.sockets.on('connection', function (socket) {
 
     //pitergrad game
 
-    socket.on('game:pitergrad:touch', function (data) {
-        console.log('Event received game:pitergrad:touch ' + data);
+    socket.on('game:pitergrad:touch', function (touchEvent) {
+        console.log('Event received game:pitergrad:touch ' + touchEvent);
 
-        //TODO send only to players in current duel
-        socket.broadcast.emit('game:pitergrad:touch', data)
+        //find duel.. TODO use map instead of loop through array
+        for (var index = 0; index < duels.length; ++index) {
+            var duel = duels[index];
+            if (duel.id == touchEvent.duelId) {
+                if (duel.player1 == touchEvent.initiator) {
+                    duel.player1Score++;
+                } else {
+                    duel.player2Score++;
+                }
+
+                //send duel with scores to clients
+                touchEvent.duel = duel;
+                return;
+            }
+        }
+
+        //TODO send only to players in current duel. It will be better for performance
+        io.sockets.emit('game:pitergrad:touch', touchEvent)
     });
 });
 
@@ -107,7 +123,10 @@ function handleDuelRequest(socket) {
             duel.player2 = {};
             duel.player2.name = playerName;
 
-            io.sockets.emit('duel:start', duel.id);
+            duel.player1Score = 0;
+            duel.player2Score = 0;
+
+            io.sockets.emit('duel:start', duel);
         } else {
             var duel = {status: 'waiting'};
             duel.id = duelID++;

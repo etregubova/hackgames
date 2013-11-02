@@ -11,6 +11,7 @@ angular.module('app', [
         $routeProvider.when('/menu', {templateUrl: 'views/menu.html', controller: 'MenuCtrl'});
         $routeProvider.when('/rating', {templateUrl: 'views/rating.html', controller: 'RatingCtrl'});
         $routeProvider.when('/duel', {templateUrl: 'views/duel.html', controller: 'DuelCtrl'});
+        $routeProvider.when('/duel/play', {templateUrl: 'views/duelGame.html', controller: 'DuelGameCtrl'});
         $routeProvider.when('/training', {templateUrl: 'views/training.html', controller: 'TrainingCtrl'});
         $routeProvider.otherwise({redirectTo: '/registration'});
     }]).

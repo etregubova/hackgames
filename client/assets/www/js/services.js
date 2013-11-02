@@ -43,25 +43,32 @@ angular.module('app')
             setupDuel: function () {
                 socket.emit('duel:join');
             },
+
             cancelDuel: function (callback) {
                 socket.emit('duel:cancel', {}, function () {
                     callback();
                 });
             },
-            getCurrentDuelId: function () {
-                return currentDuelId;
+
+            getCurrentDuel: function () {
+                return currentDuel;
+            },
+
+            updateCurrentDuelScore: function (duel) {
+                currentDuel.player1Score = duel.player1Score;
+                currentDuel.player2Score = duel.player2Score;
             }
         };
 
-        var currentDuelId;
+        var currentDuel;
 
         socket.on('duel:joined', function (duelId) {
             $rootScope.$broadcast('duel:joined', duelId);
         });
 
-        socket.on('duel:start', function (duelId) {
-            currentDuelId = duelId;
-            $rootScope.$broadcast('duel:start', duelId);
+        socket.on('duel:start', function (duel) {
+            currentDuel = duel;
+            $rootScope.$broadcast('duel:start', duel);
         });
 
         return service;
