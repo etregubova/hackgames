@@ -7,7 +7,7 @@ angular.module('app').
     controller('MenuCtrl', function ($scope, $http, socket, server) {
     })
 
-    .controller('RatingCtrl',function ($scope, $http, socket, server) {
+    .controller('RatingCtrl', function ($scope, $http, socket, server) {
 
         socket.on("player:rating", function (players) {
             $scope.players = players;
@@ -17,10 +17,6 @@ angular.module('app').
             $scope.players = data;
         });
 
-        socket.on('player:added', function (player) {
-            $scope.players.push(player);
-        });
-
         socket.on('player:removed', function (playerName) {
             for (var index = 0; index < $scope.players.length; ++index) {
                 if ($scope.players[index].name === playerName) {
@@ -28,10 +24,17 @@ angular.module('app').
                     return;
                 }
             }
-        })
-    }).
+        });
 
-    controller('RegistrationCtrl', function ($scope, Player, $location) {
+        socket.on('player:added', function (player) {
+            $scope.players.push(player);
+            $scope.$on('duel:start', function (event) {
+                $location.path('/menu')
+            });
+        });
+
+    })
+    .controller('RegistrationCtrl', function ($scope, Player, $location) {
         if (Player.isLoggedIn()) {
             $location.path('/menu')
         }
@@ -42,12 +45,21 @@ angular.module('app').
         };
     })
 
-    .controller('DuelCtrl', ['$scope', 'Application', function ($scope, Application) {
-        $('#modalWait').modal('show');
-
+    .controller('DuelCtrl', ['$scope', '$window', '$location', 'Application', function ($scope, $window, $location, Application) {
         Application.setupDuel();
 
-        $scope.$on('duel:start', function () {
-            $('#modalWait').modal('hide');
+        $scope.$on('duel:joined', function (event, duelId) {
+            $scope.duelId = duelId;
         });
+
+        $scope.$on('duel:start', function (event, duelId) {
+            if ($scope.duelId === duelId) {
+                $location.path('/menu')
+            }
+        });
+
+        $scope.cancel = function () {
+            Application.cancelDuel();
+            $location.path('/menu')
+        };
     }])

@@ -1,13 +1,18 @@
-<div class="center-block">
-    <div class="modal fade" id="modalWait" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Режим "Дуэль"</h4>
+<div class="container center-block">
+    <div class="panel panel-success col-md-4">
+        <div class="panel-heading">
+            <h5 class="panel-title">Режим "Дуэль"</h5>
+        </div>
+        <div class="panel-body">
+            <h6 class="text-center"><strong>Ждите соперника&hellip;</strong></h6>
+
+            <div class="progress progress-striped active">
+                <div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0"
+                     aria-valuemax="100" style="width: 100%">
                 </div>
-                <div class="modal-body">
-                    <p class="text-center">Ждите соперника&hellip;</p>
-                </div>
+            </div>
+            <div class="centered">
+                <button type="button" class="btn btn-default btn-small" ng-click="cancel()">Отмена</button>
             </div>
         </div>
     </div>

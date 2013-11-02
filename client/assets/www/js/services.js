@@ -26,20 +26,21 @@ angular.module('app')
     })
 
     .factory('Application', ['$rootScope', 'socket', '$http', 'server', function ($rootScope, socket, $http, server) {
-        var player = {
-            name: 'robot1'
-        };
-
         var service = {
             setupDuel: function () {
-                socket.emit('duel:join', player.name);
+                socket.emit('duel:join');
+            },
+            cancelDuel: function () {
+                socket.emit('duel:cancel');
             }
         };
 
-        socket.on('duel:start', function (playerName) {
-            if (player.name === playerName) {
-                $rootScope.$broadcast('duel:start');
-            }
+        socket.on('duel:joined', function (duelId) {
+            $rootScope.$broadcast('duel:joined', duelId);
+        })
+
+        socket.on('duel:start', function (duelId) {
+            $rootScope.$broadcast('duel:start', duelId);
         })
 
         return service;

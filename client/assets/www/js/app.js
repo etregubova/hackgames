@@ -14,7 +14,7 @@ angular.module('app', [
         $routeProvider.otherwise({redirectTo: '/menu'});
         $routeProvider.otherwise({redirectTo: '/registration'});
     }]).
-    constant('server', "http://172.17.4.195:3000")
+    constant('server', "http://172.17.4.115:3000")
     .run(function ($http, server) {
         //do nothing now
     });

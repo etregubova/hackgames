@@ -18,6 +18,7 @@ app.all("/api/*", function (req, res, next) {
 });
 
 var players = [];
+var duelID = 0;
 var duels = [];
 
 io.sockets.on('connection', function (socket) {
@@ -60,36 +61,58 @@ io.sockets.on('connection', function (socket) {
         }
     });
 
-    socket.on('duel:join', function (newPlayerName) {
-        handleDuelRequest(socket, newPlayerName)
-        console.log('duel:join - ' + newPlayerName);
+    socket.on('duel:join', function () {
+        console.log('duel:join');
+        handleDuelRequest(socket)
+    });
+
+    socket.on('duel:cancel', function () {
+        console.log('duel:cancel');
+        cancelDuelRequest(socket)
     });
 });
 
-function handleDuelRequest(socket, newPlayerName) {
-    var notStartedDuels = duels.filter(function (duel) {
-        return duel.status === 'waiting';
-    })
+function handleDuelRequest(socket) {
+    socket.get('player', function (err, playerName) {
+        var notStartedDuels = duels.filter(function (duel) {
+            return duel.status === 'waiting';
+        })
 
-    if (notStartedDuels.length > 0) {
-        var duel = notStartedDuels[0];
-        duel.status = 'started';
+        if (notStartedDuels.length > 0) {
+            var duel = notStartedDuels[0];
+            socket.emit('duel:joined', duel.id);
 
-        duel.player2 = {};
-        duel.player2.name = newPlayerName;
-        duel.player2.socket = socket;
+            duel.status = 'started';
 
-        duel.player1.socket.emit('duel:start');
-        duel.player2.socket.emit('duel:start');
-    } else {
-        var duel = {status: 'waiting'};
+            duel.player2 = {};
+            duel.player2.name = playerName;
 
-        duel.player1 = {};
-        duel.player1.name = newPlayerName;
-        duel.player1.socket = socket;
+            socket.broadcast.emit('duel:start', duel.id);
+        } else {
+            var duel = {status: 'waiting'};
+            duel.id = duelID++;
+            duel.player1 = {};
+            duel.player1.name = playerName;
 
-        duels.push(duel);
-    }
+            duels.push(duel);
+
+            socket.emit('duel:joined', duel.id);
+        }
+
+        console.log(duels);
+    });
+}
+
+function cancelDuelRequest(socket) {
+    socket.get('player', function (err, playerName) {
+        for (index = 0; index < duels.length; ++index) {
+            var duel = duels[index];
+            if (duel.player1.name == playerName) {
+                duels.splice(index, 1);
+                return;
+            }
+        }
+    });
 
     console.log(duels);
 }
