@@ -17,40 +17,40 @@ app.all("/api/*", function (req, res, next) {
     next();
 });
 
-//Teams service
-var teams = [];
-
-app.get('/api/teams', function (req, res) {
-    res.send(teams)
-});
-
-app.get('/api/teams/:teamName', function (req, res) {
-    for (index = 0; index < teams.length; ++index) {
-        if (teams[index].name === req.params.teamName) {
-            res.send(teams[index])
-            return;
-        }
-    }
-    res.send(404)
-});
-
-app.post('/api/teams', function (req, res) {
-    addedTeam = req.body;
-    addedTeam.createTime = new Date();
-    teams.push(addedTeam);
-    res.send(201, addedTeam);
-    io.sockets.emit('team:added', addedTeam)
-});
-
-/* Duels */
-var duels = [];
+//Player service
+var players = [];
 
 io.sockets.on('connection', function (socket) {
-    socket.on('duel:join', function(newPlayerName) {
+
+    socket.on('player:added', function (newPlayer) {
+        newPlayer.createTime = new Date();
+        newPlayer.score = 0;
+        newPlayer.tournaments = 0;
+        players.push(newPlayer);
+        io.sockets.emit('player:added', newPlayer)
+    });
+
+    socket.on('player:rating', function () {
+        socket.on('player:rating', players)
+    });
+
+    socket.on('player:get', function (playerName) {
+        for (index = 0; index < teams.length; ++index) {
+            if (players[index].name === playerName) {
+                socket.on('player:get', players[index])
+                return;
+            }
+        }
+    });
+
+    socket.on('duel:join', function (newPlayerName) {
         handleDuelRequest(socket, newPlayerName)
         console.log('duel:join - ' + newPlayerName);
     });
 });
+
+/* Duels */
+var duels = [];
 
 function handleDuelRequest(socket, newPlayerName) {
     var notStartedDuels = duels.filter(function (duel) {

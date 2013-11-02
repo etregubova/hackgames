@@ -15,7 +15,6 @@ angular.module('app')
             emit: function (eventName, data, callback) {
                 socket.emit(eventName, data, function () {
                     var args = arguments;
-                    $rootScope.$broadcast()
                     $rootScope.$apply(function () {
                         if (callback) {
                             callback.apply(socket, args);

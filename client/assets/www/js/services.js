@@ -4,44 +4,27 @@
 
 angular.module('app')
 
-    .factory('Team', function ($http, server, $cookies, $window) {
-        var team;
-
-        //pre-load team by cookie
-        if ($cookies.teamName) {
-            $http.get(server + '/api/teams/' + $cookies.teamName).success(function (data) {
-                team = data;
-            })
-        }
+    .factory('Player', function (socket, server, $window) {
+        var player;
 
         return {
 
-            hasTeam: function () {
-                return team != null;
+            isLoggedIn: function () {
+                return player != null;
             },
 
-            getTeam: function () {
-                return team;
+            getPlayer: function () {
+                return player;
             },
 
-            setTeam: function (data) {
-                team = data;
-            },
-
-            registerTeam: function (addedTeam, callback) {
-                $http.
-                    post(server + "/api/teams", addedTeam).
-                    success(function (data) {
-                        $window.alert("Saved");
-                        team = data;
-                        callback();
-                    }).
-                    error(function (data, status, headers, config) {
-                        //do nothing
-                    })
+            register: function (addedPlayer, callback) {
+                player = addedPlayer;
+                socket.emit('player:added', addedPlayer);
+                callback();
             }
         }
     })
+
     .factory('Application', ['$rootScope', 'socket', '$http', 'server', function ($rootScope, socket, $http, server) {
         var player = {
             name: 'robot1'
