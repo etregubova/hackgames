@@ -39,7 +39,6 @@ angular.module('app').
     })
 
     .controller('TrainingCtrl', ['$scope', '$window', '$location', 'Application', function ($scope, $window, $location, Application) {
-        var stage;
         var queue;
 
         var manifest = [
@@ -51,7 +50,8 @@ angular.module('app').
          * Initializes and loads resources.
          */
         $scope.init = function () {
-            stage = new createjs.Stage("gameCanvas");
+            $scope.stage = new createjs.Stage("gameCanvas");
+            createjs.Touch.enable($scope.stage);
 
             /* Take into account "Mobile Safe Approach":
              http://www.createjs.com/Docs/SoundJS/classes/Sound.html
@@ -69,12 +69,12 @@ angular.module('app').
         }
 
         var objects = [
-            {id: 1, type: 'image_pizza', delayTimeMillis: 200, availableMillis: 3000, from: {x: 0, y: 150}, to: {x: 800, y: 300}},
-            {id: 2, type: 'image_poo', delayTimeMillis: 700, availableMillis: 3500, from: {x: 100, y: 0}, to: {x: 800, y: 200}},
-            {id: 3, type: 'image_poo', delayTimeMillis: 1000, availableMillis: 4000, from: {x: 300, y: 0}, to: {x: 800, y: 600}},
-            {id: 4, type: 'image_pizza', delayTimeMillis: 2100, availableMillis: 3500, from: {x: 800, y: 50}, to: {x: 200, y: 600}},
-            {id: 5, type: 'image_poo', delayTimeMillis: 2000, availableMillis: 2700, from: {x: 800, y: 40}, to: {x: 0, y: 550}},
-            {id: 6, type: 'image_pizza', delayTimeMillis: 3000, availableMillis: 2900, from: {x: 500, y: 0}, to: {x: 0, y: 600}}
+            {id: 1, type: 'image_pizza', delayTimeMillis: 200, availableMillis: 7000, from: {x: 0, y: 150}, to: {x: 800, y: 300}},
+            {id: 2, type: 'image_poo', delayTimeMillis: 700, availableMillis: 7500, from: {x: 100, y: 0}, to: {x: 800, y: 200}},
+            {id: 3, type: 'image_poo', delayTimeMillis: 1000, availableMillis: 6000, from: {x: 300, y: 0}, to: {x: 800, y: 600}},
+            {id: 4, type: 'image_pizza', delayTimeMillis: 2100, availableMillis: 6500, from: {x: 800, y: 50}, to: {x: 200, y: 600}},
+            {id: 5, type: 'image_poo', delayTimeMillis: 2000, availableMillis: 5700, from: {x: 800, y: 40}, to: {x: 0, y: 550}},
+            {id: 6, type: 'image_pizza', delayTimeMillis: 3000, availableMillis: 5900, from: {x: 500, y: 0}, to: {x: 0, y: 600}}
         ]
 
         /*!
@@ -97,7 +97,7 @@ angular.module('app').
                 var to_ = $scope.adjustBorderlineCoordinate(obj.to);
                 createjs.Tween.get(object).wait(obj.delayTimeMillis).to({x: to_.x, y: to_.y}, obj.availableMillis);
 
-                stage.addChild(object);
+                $scope.stage.addChild(object);
             }
             createjs.Ticker.addEventListener("tick", $scope.updateStage);
         }
@@ -125,13 +125,13 @@ angular.module('app').
          * @param object   the object
          */
         $scope.handleObjectTouched = function (event, object) {
-            stage.removeChild(object);
+            $scope.stage.removeChild(object);
             var instance = createjs.Sound.play("sound_thunder");
             instance.volume = 0.5;
         }
 
         $scope.updateStage = function (event) {
-            stage.update();
+            $scope.stage.update();
         }
 
         $scope.init();
