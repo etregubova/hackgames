@@ -47,14 +47,20 @@ angular.module('app')
                 socket.emit('duel:cancel', {}, function () {
                     callback();
                 });
+            },
+            getCurrentDuelId: function () {
+                return currentDuelId;
             }
         };
+
+        var currentDuelId;
 
         socket.on('duel:joined', function (duelId) {
             $rootScope.$broadcast('duel:joined', duelId);
         });
 
         socket.on('duel:start', function (duelId) {
+            currentDuelId = duelId;
             $rootScope.$broadcast('duel:start', duelId);
         });
 

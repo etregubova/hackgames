@@ -81,6 +81,15 @@ io.sockets.on('connection', function (socket) {
 
         cancelDuelRequest(socket, callback)
     });
+
+    //pitergrad game
+
+    socket.on('game:pitergrad:touch', function (data) {
+        console.log('Event received game:pitergrad:touch ' + data);
+
+        //TODO send only to players in current duel
+        socket.broadcast.emit('game:pitergrad:touch', data)
+    });
 });
 
 function handleDuelRequest(socket) {
