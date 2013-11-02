@@ -1,36 +1,36 @@
-
-/**
- * Module dependencies.
- */
-
 var express = require('express');
-var routes = require('./routes');
-var user = require('./routes/user');
 var http = require('http');
-var path = require('path');
-
 var app = express();
 
-// all environments
-app.set('port', process.env.PORT || 3000);
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
-app.use(express.favicon());
+var server = http.createServer(app).listen(3000, function () {
+    console.log('Express server listening on port 3000');
+});
+var io = require('socket.io').listen(server);
+
 app.use(express.logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded());
-app.use(express.methodOverride());
-app.use(app.router);
-app.use(express.static(path.join(__dirname, 'public')));
 
-// development only
-if ('development' == app.get('env')) {
-  app.use(express.errorHandler());
-}
-
-app.get('/', routes.index);
-app.get('/users', user.list);
-
-http.createServer(app).listen(app.get('port'), function(){
-  console.log('Express server listening on port ' + app.get('port'));
+app.all("/api/*", function (req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    next();
 });
+
+//Teams service
+var teams = [];
+
+app.get('/api/teams', function(req, res) {
+    res.send(teams)
+});
+app.post('/api/teams', function (req, res) {
+    addedTeam = req.body;
+    addedTeam.createTime = new Date();
+    teams.push(addedTeam);
+    res.send(201, addedTeam);
+    io.sockets.emit('team:added', addedTeam)
+});
+
+
+
+
