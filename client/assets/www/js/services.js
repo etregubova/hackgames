@@ -55,8 +55,9 @@ angular.module('app')
             },
 
             updateCurrentDuelScore: function (duel) {
-                currentDuel.player1Score = duel.player1Score;
-                currentDuel.player2Score = duel.player2Score;
+                console.log(duel.player1.score + ' ' + duel.player2.score)
+                currentDuel.player1.score = duel.player1.score;
+                currentDuel.player2.score = duel.player2.score;
             }
         };
 

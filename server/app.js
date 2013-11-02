@@ -85,21 +85,21 @@ io.sockets.on('connection', function (socket) {
     //pitergrad game
 
     socket.on('game:pitergrad:touch', function (touchEvent) {
-        console.log('Event received game:pitergrad:touch ' + touchEvent);
+        console.log('Event received game:pitergrad:touch ' + touchEvent.initiator + touchEvent.objectId);
 
         //find duel.. TODO use map instead of loop through array
         for (var index = 0; index < duels.length; ++index) {
             var duel = duels[index];
             if (duel.id == touchEvent.duelId) {
-                if (duel.player1 == touchEvent.initiator) {
-                    duel.player1Score++;
+                if (duel.player1.name == touchEvent.initiator) {
+                    duel.player1.score++;
                 } else {
-                    duel.player2Score++;
+                    duel.player2.score++;
                 }
 
                 //send duel with scores to clients
                 touchEvent.duel = duel;
-                return;
+                break;
             }
         }
 
@@ -122,9 +122,7 @@ function handleDuelRequest(socket) {
 
             duel.player2 = {};
             duel.player2.name = playerName;
-
-            duel.player1Score = 0;
-            duel.player2Score = 0;
+            duel.player2.score = 0;
 
             io.sockets.emit('duel:start', duel);
         } else {
@@ -132,6 +130,7 @@ function handleDuelRequest(socket) {
             duel.id = duelID++;
             duel.player1 = {};
             duel.player1.name = playerName;
+            duel.player1.score = 0;
 
             duels.push(duel);
 
