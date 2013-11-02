@@ -38,7 +38,7 @@ angular.module('app').
         };
     })
 
-    .controller('TrainingCtrl', ['$scope', '$window', '$location', 'Application', function ($scope, $window, $location, Application) {
+    .controller('TrainingCtrl', ['$scope', 'Application', 'socket', function ($scope, Application, socket) {
         var queue;
 
         var manifest = [
@@ -77,6 +77,8 @@ angular.module('app').
             {id: 6, type: 'image_pizza', delayTimeMillis: 3000, availableMillis: 5900, from: {x: 500, y: 0}, to: {x: 0, y: 600}}
         ]
 
+        var objectIdToObjectMap = {};
+
         /*!
          * Initializes game board, prepares all objects.
          * Will be called right after all resources will be loaded.
@@ -92,8 +94,9 @@ angular.module('app').
                 var from_ = $scope.adjustBorderlineCoordinate(obj.from);
                 object.x = from_.x;
                 object.y = from_.y;
-                object.on("click", $scope.handleObjectTouched, null, true, object);
+                object.on("click", $scope.handleObjectTouched, null, true, {object: object, objectId: obj.id});
 
+                objectIdToObjectMap[obj.id] = object;
                 var to_ = $scope.adjustBorderlineCoordinate(obj.to);
                 createjs.Tween.get(object).wait(obj.delayTimeMillis).to({x: to_.x, y: to_.y}, obj.availableMillis);
 
@@ -118,21 +121,39 @@ angular.module('app').
             return point
         }
 
-        /*!
+        /**
+         * Destroys object that was touched by competitor.
+         */
+        socket.on("game:pitergrad:touch", function (touchEvent) {
+            if (touchEvent.duelId == Application.getCurrentDuelId()) {
+                var objectToRemove = objectIdToObjectMap[touchEvent.objectId];
+                $scope.stage.removeChild(objectToRemove);
+                //TODO use bad sounds here - user lose
+                var instance = createjs.Sound.play("sound_thunder");
+                instance.volume = 0.5;
+            }
+        });
+
+        /*
          * Destroys clicked/touched object.
          *
          * @param event   object clicked/touched event
          * @param object   the object
          */
-        $scope.handleObjectTouched = function (event, object) {
-            $scope.stage.removeChild(object);
+        $scope.handleObjectTouched = function (event, objectInfo) {
+            //TODO item is deleted from screen before socket answer for better user experience
+            socket.emit("game:pitergrad:touch", {
+                objectId: objectInfo.objectId,
+                duelId: Application.getCurrentDuelId()
+            });
+            $scope.stage.removeChild(objectInfo.object);
             var instance = createjs.Sound.play("sound_thunder");
             instance.volume = 0.5;
-        }
+        };
 
         $scope.updateStage = function (event) {
             $scope.stage.update();
-        }
+        };
 
         $scope.init();
     }])
@@ -146,7 +167,7 @@ angular.module('app').
 
         $scope.$on('duel:start', function (event, duelId) {
             if ($scope.duelId === duelId) {
-                $location.path('/menu')
+                $location.path('/training')
             }
         });
 
