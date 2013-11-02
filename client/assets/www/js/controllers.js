@@ -2,9 +2,17 @@
 
 /* Controllers */
 
-angular.module('app').
+angular.module('app')
+    .controller('AppCtrl', ['$scope', '$window', 'Application', function ($scope, $window, Application) {
+        var canvasWidth = $window.innerWidth;
+        var canvasHeight = $window.innerHeight * 0.9;
 
-    controller('MenuCtrl', function ($scope, $http, socket, server) {
+        Application.setFieldSize(canvasWidth, canvasHeight);
+
+
+    }])
+
+    .controller('MenuCtrl', function ($scope, $http, socket, server) {
     })
 
     .controller('RatingCtrl', function ($scope, $http, socket) {

@@ -68,23 +68,18 @@ angular.module('app')
         }
     })
 
-    .directive('field', function ($timeout) {
+    .directive('field', function ($timeout, Application) {
         return function (scope, element, attrs) {
-            scope.$watch('window', function (value) {
-                var window = value;
+            var size = Application.getFieldSize();
 
-                var canvasWidth = window.innerWidth * 0.9;
-                var canvasHeight = window.innerHeight * 0.7;
+            if (element[0].getContext) {
+                var context = element[0].getContext('2d');
 
-                if (element[0].getContext) {
-                    var context = element[0].getContext('2d');
+                context.canvas.width = size.width;
+                context.canvas.height = size.height;
 
-                    context.canvas.width  = canvasWidth;
-                    context.canvas.height = canvasHeight;
-
-                    context.fillStyle = "rgb(60,60,60)";
-                    context.fillRect(2, 2, canvasWidth, canvasHeight);
-                }
-            });
+                context.fillStyle = "rgb(60,60,60)";
+                context.fillRect(0, 0, size.width, size.height);
+            }
         }
     });

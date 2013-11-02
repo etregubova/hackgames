@@ -16,7 +16,7 @@ angular.module('app', [
         $routeProvider.when('/training', {templateUrl: 'views/training.html', controller: 'TrainingCtrl'});
         $routeProvider.otherwise({redirectTo: '/registration'});
     }]).
-    constant('server', "http://172.17.4.195:3000")
+    constant('server', "http://172.17.4.115:3000")
     .run(function ($http, server) {
         //do nothing now
     });

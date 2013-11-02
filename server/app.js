@@ -134,7 +134,20 @@ io.sockets.on('connection', function (socket) {
             }
         }
         callback();
-    })
+    });
+
+    socket.on('game:size', function (size) {
+        console.log('Event received game:size:' + size);
+
+        socket.get('player', function (err, playerName) {
+            for (var index = 0; index < players.length; ++index) {
+                if (players[index].name === playerName) {
+                    players[index].gameFieldSize = size;
+                    return;
+                }
+            }
+        });
+    });
 });
 
 function handleDuelRequest(socket) {
