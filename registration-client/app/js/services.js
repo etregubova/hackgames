@@ -3,7 +3,7 @@
 /* Services */
 
 angular.module('hackGames.services', []).
-    factory('socket',function ($rootScope, serverHost) {
+    factory('socket', function ($rootScope, serverHost) {
         var socket = io.connect(serverHost);
         return {
             on: function (eventName, callback) {
@@ -25,5 +25,39 @@ angular.module('hackGames.services', []).
                 })
             }
         }
-    }
-);
+    })
+    .factory('Team', function ($http, serverHost, $cookies) {
+        var team;
+
+        //pre-load team by cookie
+        if ($cookies.teamName) {
+            $http.get(serverHost + '/api/teams/' + $cookies.teamName).success(function (data) {
+                team = data;
+            })
+        }
+
+        return {
+
+            hasTeam: function () {
+                return team != null;
+            },
+
+            getTeam: function () {
+                return team;
+            },
+
+            setTeam: function (data) {
+                team = data;
+            },
+
+            registerTeam: function (addedTeam, callback) {
+                $http.
+                    post(serverHost + "/api/teams", addedTeam).
+                    success(function (data) {
+                        team = data;
+                        $cookies.teamName = addedTeam.name;
+                        callback();
+                    })
+            }
+        }
+    });

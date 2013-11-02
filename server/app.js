@@ -20,9 +20,20 @@ app.all("/api/*", function (req, res, next) {
 //Teams service
 var teams = [];
 
-app.get('/api/teams', function(req, res) {
+app.get('/api/teams', function (req, res) {
     res.send(teams)
 });
+
+app.get('/api/teams/:teamName', function (req, res) {
+    for (index = 0; index < teams.length; ++index) {
+        if (teams[index].name === req.params.teamName) {
+            res.send(teams[index])
+            return;
+        }
+    }
+    res.send(404)
+});
+
 app.post('/api/teams', function (req, res) {
     addedTeam = req.body;
     addedTeam.createTime = new Date();
