@@ -7,14 +7,14 @@ angular.module('app').
     controller('MenuCtrl', function ($scope, $http, socket, server) {
     })
 
-    .controller('RatingCtrl', function ($scope, $http, socket, server) {
+    .controller('RatingCtrl', function ($scope, $http, socket) {
 
-        socket.on("player:rating", function (players) {
-            $scope.players = players;
+        socket.emit("player:getRating", {}, function (data) {
+            $scope.players = data;
         });
 
-        socket.emit("player:rating", {}, function (data) {
-            $scope.players = data;
+        socket.on('player:added', function (player) {
+            $scope.players.push(player);
         });
 
         socket.on('player:removed', function (playerName) {
@@ -25,15 +25,8 @@ angular.module('app').
                 }
             }
         });
-
-        socket.on('player:added', function (player) {
-            $scope.players.push(player);
-            $scope.$on('duel:start', function (event) {
-                $location.path('/menu')
-            });
-        });
-
     })
+
     .controller('RegistrationCtrl', function ($scope, Player, $location) {
         if (Player.isLoggedIn()) {
             $location.path('/menu')
@@ -59,7 +52,8 @@ angular.module('app').
         });
 
         $scope.cancel = function () {
-            Application.cancelDuel();
-            $location.path('/menu')
+            Application.cancelDuel(function () {
+                $location.path('/menu')
+            });
         };
     }])

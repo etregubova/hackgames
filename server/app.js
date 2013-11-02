@@ -24,9 +24,12 @@ var duels = [];
 io.sockets.on('connection', function (socket) {
 
     socket.on('disconnect', function () {
-//        remove player
+
         socket.get('player', function (err, playerName) {
-            for (index = 0; index < players.length; ++index) {
+            console.log('Event received "player:disconnected "' + playerName);
+
+//            remove player
+            for (var index = 0; index < players.length; ++index) {
                 if (players[index].name === playerName) {
                     players.splice(index, 1);
                     io.sockets.emit('player:removed', playerName);
@@ -36,38 +39,46 @@ io.sockets.on('connection', function (socket) {
         });
     });
 
-    socket.on('player:added', function (newPlayer) {
-        console.log('player:added!!!')
-        socket.set('player', newPlayer.name);
-        newPlayer.createTime = new Date();
+    socket.on('player:added', function (newPlayer, callback) {
+        console.log('Event received "player:added "' + newPlayer)
+
+        socket.set('player', newPlayer.name);   // save player name in socket
+
+        newPlayer.createTime = new Date();     //init default properties
         newPlayer.score = 0;
         newPlayer.tournaments = 0;
+
         players.push(newPlayer);
-        io.sockets.emit('player:added', newPlayer)
+
+        socket.broadcast.emit('player:added', newPlayer);
+        callback(newPlayer);
     });
 
-    socket.on('player:rating', function () {
-        console.log('player:rating!!!')
-        socket.emit('player:rating', players)
+    socket.on('player:getRating', function (data, callback) {      //get players rating
+        console.log('Event received "player:rating"');
+        callback(players);
     });
 
-    socket.on('player:get', function (playerName) {
-        console.log('player:get!!!')
-        for (index = 0; index < teams.length; ++index) {
+    socket.on('player:get', function (playerName, callback) {
+        console.log('Event received "player:get" ' + playerName);
+
+        for (var index = 0; index < teams.length; ++index) {
             if (players[index].name === playerName) {
-                socket.on('player:get', players[index])
+                callback(players[index]);
                 return;
             }
         }
     });
 
     socket.on('duel:join', function () {
-        console.log('duel:join');
+        console.log('Event received duel:join');
+
         handleDuelRequest(socket)
     });
 
     socket.on('duel:cancel', function () {
-        console.log('duel:cancel');
+        console.log('Event received duel:cancel');
+
         cancelDuelRequest(socket)
     });
 });
@@ -105,7 +116,7 @@ function handleDuelRequest(socket) {
 
 function cancelDuelRequest(socket) {
     socket.get('player', function (err, playerName) {
-        for (index = 0; index < duels.length; ++index) {
+        for (var index = 0; index < duels.length; ++index) {
             var duel = duels[index];
             if (duel.player1.name == playerName) {
                 duels.splice(index, 1);

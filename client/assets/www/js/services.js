@@ -18,30 +18,33 @@ angular.module('app')
             },
 
             register: function (addedPlayer, callback) {
-                player = addedPlayer;
-                socket.emit('player:added', addedPlayer);
-                callback();
+                socket.emit('player:added', addedPlayer, function (savedPlayer) {
+                    player = savedPlayer;
+                    callback();
+                });
             }
         }
     })
 
-    .factory('Application', ['$rootScope', 'socket', '$http', 'server', function ($rootScope, socket, $http, server) {
+    .factory('Application', ['$rootScope', 'socket', function ($rootScope, socket) {
         var service = {
             setupDuel: function () {
                 socket.emit('duel:join');
             },
-            cancelDuel: function () {
-                socket.emit('duel:cancel');
+            cancelDuel: function (callback) {
+                socket.emit('duel:cancel', {}, function () {
+                    callback();
+                });
             }
         };
 
         socket.on('duel:joined', function (duelId) {
             $rootScope.$broadcast('duel:joined', duelId);
-        })
+        });
 
         socket.on('duel:start', function (duelId) {
             $rootScope.$broadcast('duel:start', duelId);
-        })
+        });
 
         return service;
     }]);
