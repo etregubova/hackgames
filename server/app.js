@@ -76,10 +76,10 @@ io.sockets.on('connection', function (socket) {
         handleDuelRequest(socket)
     });
 
-    socket.on('duel:cancel', function () {
+    socket.on('duel:cancel', function (data, callback) {
         console.log('Event received duel:cancel');
 
-        cancelDuelRequest(socket)
+        cancelDuelRequest(socket, callback)
     });
 });
 
@@ -98,7 +98,7 @@ function handleDuelRequest(socket) {
             duel.player2 = {};
             duel.player2.name = playerName;
 
-            socket.broadcast.emit('duel:start', duel.id);
+            io.sockets.emit('duel:start', duel.id);
         } else {
             var duel = {status: 'waiting'};
             duel.id = duelID++;
@@ -114,12 +114,13 @@ function handleDuelRequest(socket) {
     });
 }
 
-function cancelDuelRequest(socket) {
+function cancelDuelRequest(socket, callback) {
     socket.get('player', function (err, playerName) {
         for (var index = 0; index < duels.length; ++index) {
             var duel = duels[index];
-            if (duel.player1.name == playerName) {
+            if (duel.player1.name == playerName && duel.status == 'waiting') {
                 duels.splice(index, 1);
+                callback();
                 return;
             }
         }
