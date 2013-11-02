@@ -4,15 +4,19 @@
 
 angular.module('app')
     .controller('AppCtrl', ['$scope', '$window', 'Application', function ($scope, $window, Application) {
-        var canvasWidth = $window.innerWidth;
-        var canvasHeight = $window.innerHeight * 0.9;
+        var canvasWidth = $window.innerWidth - 62;
+        var canvasHeight = $window.innerHeight - 170;
 
         Application.setFieldSize(canvasWidth, canvasHeight);
 
 
     }])
 
-    .controller('MenuCtrl', function ($scope, $http, socket, server) {
+    .controller('MenuCtrl', function ($scope, $location, Player) {
+        $scope.exit = function () {
+            Player.logOut();
+            $location.path('/registration');
+        };
     })
 
     .controller('RatingCtrl', function ($scope, $http, socket) {

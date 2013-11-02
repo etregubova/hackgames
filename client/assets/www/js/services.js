@@ -39,6 +39,7 @@ angular.module('app')
     })
 
     .factory('Application', ['$rootScope', 'socket', function ($rootScope, socket) {
+
         var gameFieldSize = {};
 
         var service = {

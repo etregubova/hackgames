@@ -1,23 +1,36 @@
-<div class="container">
-    <h3>Введите имя:</h3>
-
-    <form class="form-horizontal" role="form" name="registrationForm">
-        <div class="form-group">
-
-            <div class="col-lg-10">
-                <input type="text" name="name" class="form-control" placeholder="Имя"
-                       ng-model="playerName" ng-trim required>
+<div class="page-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 pull-right">
+                <img src="img/name.png" class="img-rounded">
+                <a href=""><i class="fa fa-umbrella fa-fw"></i></a>
             </div>
         </div>
+    </div>
+</div>
+<div class="container">
+    <div class="well">
+        <h5>Регистрация участника</h5>
+        <hr>
 
-        <div class="form-group">
-            <div class="col-lg-offset-2 col-lg-10">
-                <div class="btn-group">
-                    <button class="btn btn-primary" type="button" ng-click='start()'
-                            ng-disabled="!registrationForm.$valid">Поехали!
-                    </button>
+        <form class="form-horizontal" role="form" name="registrationForm">
+            <div class="form-group">
+
+                <div class="col-lg-4">
+                    <input type="text" name="name" class="form-control" placeholder="Имя"
+                           ng-model="playerName" ng-trim required>
                 </div>
             </div>
-        </div>
-    </form>
+
+            <div class="form-group">
+                <div class="col-lg-4">
+                    <div class="btn-group">
+                        <button class="btn btn-success" type="button" ng-click='start()'
+                                ng-disabled="!registrationForm.$valid">Поехали!
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>

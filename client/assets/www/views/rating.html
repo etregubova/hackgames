@@ -1,3 +1,6 @@
+<div class="page-header">
+    <h4 class="text-center app-header">ПитерГрад</h4>
+</div>
 <div class="panel panel-info">
     <div class="panel-heading text-center">Рейтинг участников</div>
     <table class="table table-striped">
@@ -6,13 +9,12 @@
             <th>#</th>
             <th>Участник</th>
             <th>Очки</th>
-            <th>Турниры</th>
+            <th>Дуэли</th>
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="player in players | orderBy: 'id'" ng-animate="'fade'"
-            ng-class="{success: $index==0}">
-            <td>{{player.id}}</td>
+        <tr ng-repeat="player in players | orderBy: 'id'" ng-animate="'fade'">
+            <td>{{index}}</td>
             <td>{{player.name}}</td>
             <td>{{player.score}}</td>
             <td>{{player.tournaments}}</td>

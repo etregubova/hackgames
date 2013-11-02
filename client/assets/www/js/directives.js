@@ -13,7 +13,7 @@ angular.module('app')
                     scope.$apply();
                 }
             }
-        }
+        };
     })
 
     .directive('timer', function ($timeout, dateFilter, $rootScope) {
@@ -65,7 +65,65 @@ angular.module('app')
             element.bind('$destroy', function () {
                 $timeout.cancel(timeoutId);
             });
-        }
+        };
+    })
+
+    .directive('background', function () {
+        return function (scope, element) {
+            var loaded = false;
+            var soundOn = false;
+
+            function init() {
+                if (!createjs.Sound.initializeDefaultPlugins()) {
+                    return;
+                }
+
+                createjs.Sound.registerPlugins([createjs.WebAudioPlugin, createjs.FlashPlugin, createjs.HTMLAudioPlugin]);
+
+                createjs.Sound.addEventListener("fileload", createjs.proxy(handleLoad, this));
+                createjs.Sound.registerSound("content/background.mp3", "sound");
+            }
+
+            function handleLoad() {
+                loaded = true;
+                play();
+            }
+
+            function handleComplete() {
+                play();
+            }
+
+            function play() {
+                if (loaded && soundOn) {
+                    var instance = createjs.Sound.play("sound");
+                    instance.addEventListener("complete", createjs.proxy(handleComplete, this));
+                }
+            }
+
+            function stop() {
+                soundOn = false;
+                if (loaded) {
+                    createjs.Sound.stop();
+                }
+            }
+
+            scope.$on('background-sound:on', function () {
+                element.click();
+            });
+
+            scope.$on('background-sound:off', function () {
+                stop();
+            });
+
+            init();
+
+            element.context.addEventListener("click", function () {
+                soundOn = true;
+                play();
+            }, false);
+
+            element.click();
+        };
     })
 
     .directive('field', function ($timeout, Application) {
@@ -81,5 +139,5 @@ angular.module('app')
                 context.fillStyle = "rgb(60,60,60)";
                 context.fillRect(0, 0, size.width, size.height);
             }
-        }
+        };
     });
