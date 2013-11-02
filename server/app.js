@@ -21,6 +21,14 @@ var players = [];
 var duelID = 0;
 var duels = [];
 
+var getPlayerByName = function (name) {
+    for (var index = 0; index < players.length; ++index) {
+        if (players[index].name === name) {
+            return players[index];
+        }
+    }
+};
+
 io.sockets.on('connection', function (socket) {
 
     socket.on('disconnect', function () {
@@ -106,6 +114,27 @@ io.sockets.on('connection', function (socket) {
         //TODO send only to players in current duel. It will be better for performance
         io.sockets.emit('game:pitergrad:touch', touchEvent)
     });
+
+    socket.on('game:pitergrad:end', function (data, callback) {
+        for (var index = 0; index < duels.length; ++index) {
+            var duel = duels[index];
+            if (duel.id == data.duelId) {
+                if (duel.status == 'completed') { //we should update rating only once
+                    break;
+                }
+                duel.status = 'completed';
+                //update rating
+                var firstPlayer = getPlayerByName(duel.player1.name);
+                var secondPlayer = getPlayerByName(duel.player2.name);
+                firstPlayer.score += duel.player1.score;
+                firstPlayer.tournaments++;
+                secondPlayer.score += duel.player2.score;
+                secondPlayer.tournaments++;
+                break;
+            }
+        }
+        callback();
+    })
 });
 
 function handleDuelRequest(socket) {

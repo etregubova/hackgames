@@ -16,7 +16,7 @@ angular.module('app')
         }
     })
 
-    .directive('timer', function ($timeout, dateFilter) {
+    .directive('timer', function ($timeout, dateFilter, $rootScope) {
         // return the directive link function. (compile function not needed)
         return function (scope, element, attrs) {
             var format = 'mm:ss';
@@ -25,17 +25,17 @@ angular.module('app')
 
             // used to update the UI
             function updateTime() {
+                seconds--;
+
+                if (seconds < 5) {
+                    element.addClass('label-danger');
+                }
+
+                var milliseconds = seconds * 1000;
+                element.text(dateFilter(new Date(milliseconds), format));
                 if (seconds === 0) {
+                    $rootScope.$broadcast("timer:ended");
                     $timeout.cancel(timeoutId);
-                } else {
-                    seconds--;
-
-                    if (seconds < 5) {
-                        element.addClass('label-danger');
-                    }
-
-                    var milliseconds = seconds * 1000;
-                    element.text(dateFilter(new Date(milliseconds), format));
                 }
             }
 

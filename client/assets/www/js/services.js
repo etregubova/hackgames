@@ -55,7 +55,6 @@ angular.module('app')
             },
 
             updateCurrentDuelScore: function (duel) {
-                console.log(duel.player1.score + ' ' + duel.player2.score)
                 currentDuel.player1.score = duel.player1.score;
                 currentDuel.player2.score = duel.player2.score;
             }

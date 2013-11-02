@@ -163,7 +163,7 @@ angular.module('app').
     }])
 
     //THIS IS A COPY PASTE FROM TrainingController. You have to duplicate all changes!!!
-    .controller('DuelGameCtrl', ['$scope', 'Application', 'Player', 'socket', function ($scope, Application, Player, socket) {
+    .controller('DuelGameCtrl', ['$scope', 'Application', 'Player', 'socket', '$location', function ($scope, Application, Player, socket, $location) {
         var queue;
 
         var manifest = [
@@ -173,6 +173,13 @@ angular.module('app').
 
         $scope.duel = Application.getCurrentDuel();
 
+        $scope.$on('timer:ended', function () {
+            socket.emit("game:pitergrad:end", {
+                duelId: Application.getCurrentDuel().id
+            }, function () {
+                $location.path("/rating")
+            });
+        });
         /*!
          * Initializes and loads resources.
          */
