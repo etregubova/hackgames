@@ -1,3 +1,27 @@
 <div>
+    <div>
+        <h3>Пожалуйста, зарегистрируйте команду:</h3>
+
+        <form class="form-horizontal" role="form" name="teamDataForm">
+            <div class="form-group">
+                <label class="col-lg-2 control-label">Название команды</label>
+
+                <div class="col-lg-10">
+                    <input type="text" name="name" class="form-control" placeholder="Название команды"
+                           ng-model="teamName" ng-trim required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-lg-offset-2 col-lg-10">
+                    <div class="btn-group">
+                        <button class="btn btn-primary" type="button" ng-click='addTeam()'
+                                ng-disabled="!teamDataForm.$valid">Поехали!
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
 
 </div>

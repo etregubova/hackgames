@@ -3,7 +3,8 @@
 /* Controllers */
 
 angular.module('app.controllers', []).
-    controller('AppCtrl', function ($scope, $http, socket, server) {
+
+    controller('MenuCtrl', function ($scope, $http, socket, server) {
         $http.get(server + '/api/teams').success(function (data) {
             $scope.teams = data
         });
@@ -13,8 +14,34 @@ angular.module('app.controllers', []).
         });
 
     })
-    .controller('RatingCtrl', function ($scope, $http, socket, server) {
+
+    .controller('RatingCtrl',function ($scope, $http, socket, server) {
         $scope.players = [
             {id: 1, name: 'Катя', score: 55, tournaments: 3}
         ];
+    }).
+
+    controller('RegistrationCtrl',function ($scope, Team, $location, $window) {
+        if (Team.hasTeam()) {
+            $location.path('/menu')
+        }
+
+        $scope.addTeam = function () {
+            Team.registerTeam({name: $scope.teamName}, function () {
+                $window.alert("Registered");
+                $location.path('/menu')
+            })
+        };
+
+    }).
+
+    controller('TeamsCtrl', function ($scope, $http, server, socket) {
+
+        $http.get(server + "/api/teams").success(function (data) {
+            $scope.teams = data;
+        });
+
+        socket.on('team:added', function (team) {
+            $scope.teams.push(team);
+        })
     });
