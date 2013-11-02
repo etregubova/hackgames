@@ -6,11 +6,18 @@ angular.module('app')
 
     .factory('Player', function (socket, server, $window) {
         var player;
+        var localStorage = $window['localStorage'];
 
         return {
 
-            isLoggedIn: function () {
-                return player != null;
+            hasPreviousUser: function () {
+                var previousUserName = localStorage.getItem('previousUser');
+                return previousUserName != null;
+            },
+
+            getPreviousUser: function () {
+                var previousUserName = localStorage.getItem('previousUser');
+                return {name: previousUserName};
             },
 
             getPlayer: function () {
@@ -18,10 +25,15 @@ angular.module('app')
             },
 
             register: function (addedPlayer, callback) {
+                localStorage.setItem('previousUser', addedPlayer.name);
                 socket.emit('player:added', addedPlayer, function (savedPlayer) {
                     player = savedPlayer;
                     callback();
                 });
+            },
+
+            logOut: function () {
+                localStorage.removeItem('previousUser');
             }
         }
     })

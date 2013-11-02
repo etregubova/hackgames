@@ -28,14 +28,17 @@ angular.module('app').
     })
 
     .controller('RegistrationCtrl', function ($scope, Player, $location) {
-        if (Player.isLoggedIn()) {
-            $location.path('/menu')
+        if (Player.hasPreviousUser()) {
+            Player.register(Player.getPreviousUser(), function () {
+                $location.path('/menu');
+            });
+        } else {
+            $scope.start = function () {
+                Player.register({name: $scope.playerName}, function () {
+                    $location.path('/menu')
+                })
+            };
         }
-        $scope.start = function () {
-            Player.register({name: $scope.playerName}, function () {
-                $location.path('/menu')
-            })
-        };
     })
 
     .controller('TrainingCtrl', ['$scope', '$window', '$location', 'Application', function ($scope, $window, $location, Application) {
