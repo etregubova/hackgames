@@ -1,24 +1,35 @@
 <div class="page-header">
-    <h4 class="text-center app-header">ПитерГрад</h4>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 pull-right">
+                <img src="img/name.png" class="img-rounded">
+                <a href=""><i class="fa fa-umbrella fa-fw"></i></a>
+            </div>
+        </div>
+    </div>
 </div>
-<div class="panel panel-info">
-    <div class="panel-heading text-center">Рейтинг участников</div>
-    <table class="table table-striped">
-        <thead>
-        <tr>
-            <th>#</th>
-            <th>Участник</th>
-            <th>Очки</th>
-            <th>Дуэли</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr ng-repeat="player in players | orderBy: 'id'" ng-animate="'fade'">
-            <td>{{index}}</td>
-            <td>{{player.name}}</td>
-            <td>{{player.score}}</td>
-            <td>{{player.tournaments}}</td>
-        </tr>
-        </tbody>
-    </table>
+<div class="container">
+    <div class="well">
+        <h5>Рейтинг участников</h5>
+        <hr>
+
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Участник</th>
+                <th class="text-center">Дуэли</th>
+                <th class="text-center">Очки</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="player in players | orderBy: 'id'" ng-animate="'fade'">
+                <td>{{$index+1}}</td>
+                <td>{{player.name}}</td>
+                <td class="text-center">{{player.duels}}</td>
+                <td class="text-center">{{player.score}}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
