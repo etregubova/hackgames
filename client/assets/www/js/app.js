@@ -5,15 +5,15 @@
 angular.module('app', [
         'ngRoute',
         'ngCookies',
-        'ngAnimate',
-        'app.controllers',
-        'app.services'
+        'ngAnimate'
     ])
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider.when('/registration', {templateUrl: 'views/registration.html', controller: 'RegistrationCtrl'});
         $routeProvider.when('/teams', {templateUrl: 'views/teams.html', controller: 'TeamsCtrl'});
         $routeProvider.when('/menu', {templateUrl: 'views/menu.html', controller: 'MenuCtrl'});
         $routeProvider.when('/rating', {templateUrl: 'views/rating.html', controller: 'RatingCtrl'});
+        $routeProvider.when('/duel', {templateUrl: 'views/duel.html', controller: 'DuelCtrl'});
+        $routeProvider.otherwise({redirectTo: '/menu'});
         $routeProvider.otherwise({redirectTo: '/registration'});
     }]).
     constant('server', "http://172.17.4.195:3000")

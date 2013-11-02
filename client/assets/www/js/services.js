@@ -2,7 +2,7 @@
 
 /* Services */
 
-angular.module('app.services', [])
+angular.module('app')
 
     .factory('Team', function ($http, server, $cookies, $window) {
         var team;
@@ -41,4 +41,23 @@ angular.module('app.services', [])
                     })
             }
         }
-    });
+    })
+    .factory('Application', ['$rootScope', 'socket', '$http', 'server', function ($rootScope, socket, $http, server) {
+        var player = {
+            name: 'robot1'
+        };
+
+        var service = {
+            setupDuel: function () {
+                socket.emit('duel:join', player.name);
+            }
+        };
+
+        socket.on('duel:start', function (playerName) {
+            if (player.name === playerName) {
+                $rootScope.$broadcast('duel:start');
+            }
+        })
+
+        return service;
+    }]);

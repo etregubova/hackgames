@@ -42,6 +42,44 @@ app.post('/api/teams', function (req, res) {
     io.sockets.emit('team:added', addedTeam)
 });
 
+/* Duels */
+var duels = [];
+
+io.sockets.on('connection', function (socket) {
+    socket.on('duel:join', function(newPlayerName) {
+        handleDuelRequest(socket, newPlayerName)
+        console.log('duel:join - ' + newPlayerName);
+    });
+});
+
+function handleDuelRequest(socket, newPlayerName) {
+    var notStartedDuels = duels.filter(function (duel) {
+        return duel.status === 'waiting';
+    })
+
+    if (notStartedDuels.length > 0) {
+        var duel = notStartedDuels[0];
+        duel.status = 'started';
+
+        duel.player2 = {};
+        duel.player2.name = newPlayerName;
+        duel.player2.socket = socket;
+
+        duel.player1.socket.emit('duel:start');
+        duel.player2.socket.emit('duel:start');
+    } else {
+        var duel = {status: 'waiting'};
+
+        duel.player1 = {};
+        duel.player1.name = newPlayerName;
+        duel.player1.socket = socket;
+
+        duels.push(duel);
+    }
+
+    console.log(duels);
+}
+
 
 
 
