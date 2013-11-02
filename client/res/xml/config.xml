@@ -13,4 +13,7 @@
     <access origin="*" />
     <content src="index.html" />
 
+    <preference name="orientation" value="portait" />
+    <preference name="fullscreen" value="true" />
+
 </widget>

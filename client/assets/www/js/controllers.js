@@ -315,4 +315,9 @@ angular.module('app').
                 $location.path('/menu')
             });
         };
+    }])
+
+    .controller('TournamentCtrl', ['$scope', '$window', function ($scope, $window) {
+        $scope.score = 456;
+        $scope.window = $window;
     }]);

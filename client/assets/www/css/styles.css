@@ -5,3 +5,7 @@
 .centered {
     text-align: center;
 }
+
+.text-right {
+    float:right;
+}
