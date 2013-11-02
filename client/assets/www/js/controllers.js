@@ -8,16 +8,26 @@ angular.module('app').
     })
 
     .controller('RatingCtrl',function ($scope, $http, socket, server) {
-        $scope.players = [
-            {id: 1, name: 'Катя', score: 55, tournaments: 3}
-        ];
 
-        $http.get(server + "/api/players").success(function (data) {
+        socket.on("player:rating", function (players) {
+            $scope.players = players;
+        });
+
+        socket.emit("player:rating", {}, function (data) {
             $scope.players = data;
         });
 
         socket.on('player:added', function (player) {
             $scope.players.push(player);
+        });
+
+        socket.on('player:removed', function (playerName) {
+            for (var index = 0; index < $scope.players.length; ++index) {
+                if ($scope.players[index].name === playerName) {
+                    $scope.players.splice(index, 1);
+                    return;
+                }
+            }
         })
     }).
 

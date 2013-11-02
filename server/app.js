@@ -17,12 +17,27 @@ app.all("/api/*", function (req, res, next) {
     next();
 });
 
-//Player service
 var players = [];
+var duels = [];
 
 io.sockets.on('connection', function (socket) {
 
+    socket.on('disconnect', function () {
+//        remove player
+        socket.get('player', function (err, playerName) {
+            for (index = 0; index < players.length; ++index) {
+                if (players[index].name === playerName) {
+                    players.splice(index, 1);
+                    io.sockets.emit('player:removed', playerName);
+                    return;
+                }
+            }
+        });
+    });
+
     socket.on('player:added', function (newPlayer) {
+        console.log('player:added!!!')
+        socket.set('player', newPlayer.name);
         newPlayer.createTime = new Date();
         newPlayer.score = 0;
         newPlayer.tournaments = 0;
@@ -31,10 +46,12 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on('player:rating', function () {
-        socket.on('player:rating', players)
+        console.log('player:rating!!!')
+        socket.emit('player:rating', players)
     });
 
     socket.on('player:get', function (playerName) {
+        console.log('player:get!!!')
         for (index = 0; index < teams.length; ++index) {
             if (players[index].name === playerName) {
                 socket.on('player:get', players[index])
@@ -48,9 +65,6 @@ io.sockets.on('connection', function (socket) {
         console.log('duel:join - ' + newPlayerName);
     });
 });
-
-/* Duels */
-var duels = [];
 
 function handleDuelRequest(socket, newPlayerName) {
     var notStartedDuels = duels.filter(function (duel) {
