@@ -7,6 +7,7 @@ angular.module('app', [
         'ngAnimate'
     ])
     .config(['$routeProvider', function ($routeProvider) {
+        $routeProvider.when('/splash', {templateUrl: 'views/splash.html', controller: 'SplashCtrl'});
         $routeProvider.when('/registration', {templateUrl: 'views/registration.html', controller: 'RegistrationCtrl'});
         $routeProvider.when('/menu', {templateUrl: 'views/menu.html', controller: 'MenuCtrl'});
         $routeProvider.when('/settings', {templateUrl: 'views/settings.html', controller: 'SettingsCtrl'});

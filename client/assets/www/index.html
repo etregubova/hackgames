@@ -11,8 +11,9 @@
 </head>
 <body>
 
-<div data-role="page" ng-controller="AppCtrl">
+<div ng-controller="AppCtrl">
     <span background></span>
+
     <div class="page-header">
         <div class="container">
             <div class="row">
@@ -28,6 +29,19 @@
 
 <script src="lib/jquery.min.js"></script>
 <script src="lib/bootstrap.min.js"></script>
+
+<script type="text/javascript" charset="utf-8">
+    document.addEventListener("deviceready", onDeviceReady, false);
+
+    function onDeviceReady() {
+        document.addEventListener("backbutton", onBackButton, false);
+    }
+
+    function onBackButton(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+</script>
 
 <script src="lib/createjs-2013.09.25.min.js"></script>
 <script src="lib/socket.io.js"></script>

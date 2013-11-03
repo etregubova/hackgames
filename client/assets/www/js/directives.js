@@ -126,18 +126,16 @@ angular.module('app')
         };
     })
 
-    .directive('field', function ($timeout, Application) {
+    .directive('field', function () {
         return function (scope, element, attrs) {
-            var size = Application.getFieldSize();
-
             if (element[0].getContext) {
                 var context = element[0].getContext('2d');
 
-                context.canvas.width = size.width;
-                context.canvas.height = size.height;
+                context.canvas.width = 250;
+                context.canvas.height = 250;
 
                 context.fillStyle = "rgb(60,60,60)";
-                context.fillRect(0, 0, size.width, size.height);
+                context.fillRect(0, 0, context.canvas.width, context.canvas.height);
             }
         };
     });

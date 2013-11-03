@@ -335,6 +335,16 @@ angular.module('app')
         };
     }])
 
+    .controller('SplashCtrl', ['$location', function ($location) {
+        document.addEventListener('deviceready', function () {
+            document.addEventListener("backbutton", function () {
+                e.preventDefault();
+                e.stopPropagation();
+            }, false);
+            $location.path('/registration');
+        }, false);
+    }])
+
     .controller('TournamentCtrl', ['$scope', '$window', function ($scope, $window) {
         $scope.score = 456;
         $scope.window = $window;
