@@ -11,21 +11,12 @@ angular.module('app')
             $rootScope.$broadcast('back');
         };
 
-        $scope.repeat = function () {
-            $scope.trainingEnded = false;
-            $rootScope.$broadcast('training:reinit');
-        };
-
         $scope.hide_back = function () {
             return $location.path() === '/registration' ||
                 $location.path() === '/duel/wait' ||
                 ($location.path() === '/training' && !$scope.trainingEnded) ||
                 $location.path() === '/duel/play' ||
                 $location.path() === '/duel/result';
-        };
-
-        $scope.hide_repeat = function () {
-            return !($location.path() === '/training' && $scope.trainingEnded);
         };
 
         $scope.$on('timer:ended', function () {
