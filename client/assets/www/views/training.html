@@ -1,30 +1,28 @@
-<div class="container">
-    <div class="well">
-        <h5>Очки: <span class="badge">{{score}}</span><span class="pull-right" timer="30"></span></h5>
-        <hr>
+<div class="well">
+    <p>Очки: <span class="badge">{{score}}</span><span class="pull-right" timer="30"></span></p>
+    <hr>
 
-        <div class="row">
-            <div class="col-md-4"></div>
-            <div class="col-md-4">
-                <div>
-                    <canvas id="gameCanvas" width="250" height="250" style="background: #3c3c3c;">
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+            <div>
+                <canvas id="gameCanvas" width="250" height="250" style="background: #3c3c3c;">
                     Your browser does not support canvas
-                    </canvas>
+                </canvas>
+            </div>
+            <div rules="rounds">
+                <div class="pull-left">
+                    <span class="rule-span"><a href=""><img src="img/rainbow.png"/></a></span>
+                    <i class="fa fa-chevron-right fa-fw"></i>
+                    <span class="rule-span"><a href=""><img ng-src="{{curColor}}"/></a></span>
                 </div>
-                <div rules="rounds">
-                    <div class="pull-left rule-span-right">
-                        <span class="rule-span"><a href=""><img src="img/rainbow.png"/></a></span>
-                        <i class="fa fa-chevron-right fa-fw"></i>
-                        <span class="rule-span"><a href=""><img ng-src="{{curIsEatable}}"/></a></span>
-                    </div>
-                    <div class="pull-right rule-span-left">
-                        <span class="rule-span"><a href=""><img src="img/spoon.png"/></a></span>
-                        <i class="fa fa-chevron-right fa-fw"></i>
-                        <span class="rule-span"><a href=""><img ng-src="{{curColor}}"/></a></span>
-                    </div>
+                <div class="pull-right">
+                    <span class="rule-span"><a href=""><img src="img/spoon.png"/></a></span>
+                    <i class="fa fa-chevron-right fa-fw"></i>
+                    <span class="rule-span"><a href=""><img ng-src="{{curIsEatable}}"/></a></span>
                 </div>
             </div>
-            <div class="col-md-4"></div>
         </div>
+        <div class="col-md-4"></div>
     </div>
 </div>
