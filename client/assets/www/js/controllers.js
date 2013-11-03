@@ -18,6 +18,9 @@ angular.module('app')
         };
     })
 
+    .controller('SettingsCtrl', function ($scope, $location, Player) {
+    })
+
     .controller('RatingCtrl', function ($scope, $http, socket) {
 
         socket.emit("player:getRating", {}, function (data) {
