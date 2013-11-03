@@ -50,6 +50,15 @@ var removePlayer = function (playerName) {
     }
 };
 
+var removeDuel = function (duelToRemove) {
+    for (var index = 0; index < duels.length; ++index) {
+        var duel = duels[index];
+        if (duel.id == duelToRemove.id) {
+            duels.splice(index, 1);
+        }
+    }
+};
+
 io.sockets.on('connection', function (socket) {
 
     socket.on('disconnect', function () {
@@ -140,7 +149,7 @@ io.sockets.on('connection', function (socket) {
 
     socket.on('game:pitergrad:end', function (data, callback) {
         var duel = getDuelById(data.duelId);
-        if (duel.status != 'completed') { //we should update rating only once
+        if (duel) { //duel can be removed by first player
             duel.status = 'completed';
             //update rating
             var firstPlayer = getPlayerByName(duel.player1.name);
@@ -149,6 +158,7 @@ io.sockets.on('connection', function (socket) {
             firstPlayer.tournaments++;
             secondPlayer.score += duel.player2.score;
             secondPlayer.tournaments++;
+            removeDuel(duel);
             io.sockets.emit('rating:updated', players)
         }
         callback();
