@@ -64,12 +64,19 @@ angular.module('app')
             {id: "image_poo", src: "content/poo_64.gif"}
         ];
 
+        var scenario;
+        var successShotPoints;
+        var wrongShotPoints;
+        var isEatable;
+        var color;
+        $scope.score = 0;
+
         /*!
          * Initializes and loads resources.
          */
         $scope.init = function () {
-            socket.emit('game:training', {}, function (scenario) {
-                objects = scenario.objects;
+            socket.emit('game:training', {}, function (s) {
+                scenario = s;
             });
 
             $scope.stage = new createjs.Stage("gameCanvas");
@@ -90,9 +97,6 @@ angular.module('app')
             queue.loadManifest(manifest);
         }
 
-        var objects;
-        $scope.score = 0;
-
         /*!
          * Initializes game board, prepares all objects.
          * Will be called right after all resources will be loaded.
@@ -100,15 +104,32 @@ angular.module('app')
          * @param event   resource loaded complete event
          */
         $scope.handleLoadComplete = function (event) {
-            for (var i in objects) {
-                var obj = objects[i];
-                console.log("Initialization of object, id=" + obj.id);
+            successShotPoints = scenario.successShotPoints;
+            wrongShotPoints = scenario.wrongShotPoints;
+
+            /* Setting up timeouts for round rules. */
+            for (var i in scenario.rounds) {
+                var round = scenario.rounds[i];
+                var timeoutMillis = round.delayTimeSeconds * 1000;
+                console.log("isEatable :" + round.isEatable + ", color :" + round.color);
+
+                setTimeout(function() {
+                    isEatable = round.isEatable; color = round.color;
+                    // TODO: need to fix this timeout logic, it does not change properties
+                    /*console.log("isEatable :" + round.isEatable + ", color :" + round.color);*/
+                }, timeoutMillis);
+            }
+
+            /* Setting up game canvas related objects. */
+            for (var i in scenario.objects) {
+                var obj = scenario.objects[i];
+                /*console.log("Initialization of object, id=" + obj.id);*/
 
                 var object = new createjs.Bitmap(queue.getResult(obj.type));
                 var from_ = $scope.adjustBorderlineCoordinate(obj.from);
                 object.x = from_.x;
                 object.y = from_.y;
-                object.on("click", $scope.handleObjectTouched, null, true, object);
+                object.on("click", $scope.handleObjectTouched, null, true, {canvasObject : object, objectInfo : obj});
 
                 var to_ = $scope.adjustBorderlineCoordinate(obj.to);
                 createjs.Tween.get(object).wait(obj.delayTimeMillis).to({x: to_.x, y: to_.y}, obj.availableMillis);
@@ -140,9 +161,14 @@ angular.module('app')
          * @param event   object clicked/touched event
          * @param object   the object
          */
-        $scope.handleObjectTouched = function (event, object) {
-            $scope.score++;
-            $scope.stage.removeChild(object);
+        $scope.handleObjectTouched = function (event, objectStructure) {
+            if (isEatable == objectStructure.objectInfo.isEatable  && color === objectStructure.objectInfo.color) {
+                $scope.score += successShotPoints;
+            } else {
+                $scope.score += wrongShotPoints;
+            }
+
+            $scope.stage.removeChild(objectStructure.canvasObject);
             var instance = createjs.Sound.play("sound_thunder");
             instance.volume = 0.5;
         };

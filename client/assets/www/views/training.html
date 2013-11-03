@@ -1,7 +1,7 @@
-<div class="panel panel-default">
+<div class="panel panel-default" ng-init="getScenario()">
     <div class="panel-heading">
         Очки : <span class="badge">{{score}}</span>
-        <span class="pull-right" timer="7"></span>
+        <span class="pull-right" timer="30"></span><!-- TODO: handle from scenario -->
     </div>
     <div class="panel-body">
         <canvas id="gameCanvas" class="panel-body" field>

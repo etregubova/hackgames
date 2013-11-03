@@ -152,6 +152,7 @@ io.sockets.on('connection', function (socket) {
     socket.on('game:training', function (object, callback) {
         console.log('Event received game:training');
 
+        /*! Temporary it was decided to set default gameFieldSize 250x250, uncomment this block if needed:
         var gameFieldSize;
         socket.get('player', function (err, playerName) {
             console.log('Event :' + playerName);
@@ -163,6 +164,8 @@ io.sockets.on('connection', function (socket) {
                 }
             }
         });
+        */
+        var gameFieldSize = {width : 250, height : 250};
         callback(generateScenario(gameFieldSize));
     });
 
@@ -269,7 +272,7 @@ function generateRounds() {
         round.delayTimeSeconds = i * ROUND_DURATION;
 
         round.isEatable = getRandomInt(0, 1) == 1 ? true : false;
-        round.color = COLORS[getRandomInt(0, COLORS.size-1)];
+        round.color = COLORS[getRandomInt(0, COLORS.length-1)];
         round.duration = ROUND_DURATION;
         rounds[i] = round;
     }
@@ -306,7 +309,7 @@ function generateObjects(gameFieldSize) {
             object.color =  behavior.color;
 
             object.delayTimeMillis = i * 1000 + getRandomInt(0, 1000);
-            object.availableMillis = 5500 + getRandomInt(0, 2500);
+            object.availableMillis = 3500 + getRandomInt(0, 1500);
 
             var path = generatePath(gameFieldSize);
             object.from = path.from;
