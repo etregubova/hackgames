@@ -11,7 +11,7 @@ angular.module('app', [
         $routeProvider.when('/play', {templateUrl: 'views/play.html', controller: 'GameCtrl'});
         $routeProvider.otherwise({redirectTo: '/splash'});
     }]).
-    constant('server', "http://172.17.4.115:3000")
+    constant('server', "http://172.17.5.101:3000")
     .run(function ($http, server) {
         //do nothing now
     });
