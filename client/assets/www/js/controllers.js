@@ -19,8 +19,9 @@ angular.module('app')
 
     .controller('MenuCtrl', function ($scope, $location, $window, Player) {
         $scope.exit = function () {
-            Player.logOut();
-            $location.path('/registration');
+            Player.logOut(function () {
+                $location.path('/registration');
+            });
         };
 
         $scope.$on('back', function () {

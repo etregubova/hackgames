@@ -40,21 +40,23 @@ var getDuelById = function (id) {
     }
 };
 
+var removePlayer = function (playerName) {
+    for (var index = 0; index < players.length; ++index) {
+        if (players[index].name === playerName) {
+            players.splice(index, 1);
+            io.sockets.emit('player:removed', playerName);
+            return;
+        }
+    }
+};
+
 io.sockets.on('connection', function (socket) {
 
     socket.on('disconnect', function () {
 
         socket.get('player', function (err, playerName) {
             console.log('Event received "player:disconnected "' + playerName);
-
-//            remove player
-            for (var index = 0; index < players.length; ++index) {
-                if (players[index].name === playerName) {
-                    players.splice(index, 1);
-                    io.sockets.emit('player:removed', playerName);
-                    return;
-                }
-            }
+            removePlayer(playerName);
         });
     });
 
@@ -71,6 +73,12 @@ io.sockets.on('connection', function (socket) {
 
         socket.broadcast.emit('player:added', newPlayer);
         callback(newPlayer);
+    });
+
+    socket.on('player:removed', function (playerName, callback) {
+        console.log('Event received "player:removed "' + playerName);
+        removePlayer(playerName);
+        callback();
     });
 
     socket.on('player:getRating', function (data, callback) {      //get players rating

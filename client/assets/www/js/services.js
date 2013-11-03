@@ -32,8 +32,11 @@ angular.module('app')
                 });
             },
 
-            logOut: function () {
-                localStorage.removeItem('previousUser');
+            logOut: function (callback) {
+                socket.emit('player:removed', player.name, function () {
+                    localStorage.removeItem('previousUser');
+                    callback();
+                });
             }
         }
     })
