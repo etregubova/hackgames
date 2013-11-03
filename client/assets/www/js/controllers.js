@@ -181,7 +181,8 @@ angular.module('app')
              because users can surely touch more than 2 times in very small time duration.
              When we will use sound with smaller duration for destroy - we can probably remove this line.
              */
-            createjs.Sound.registerSound("content/thunder.ogg", "sound_thunder", 20);
+            createjs.Sound.registerSound("content/click-correct.mp3", "sound_correct", 20);
+            createjs.Sound.registerSound("content/click-wrong.mp3", "sound_wrong", 20);
             queue = new createjs.LoadQueue(false);
             queue.installPlugin(createjs.Sound);
             queue.addEventListener("complete", $scope.handleLoadComplete);
@@ -244,10 +245,12 @@ angular.module('app')
                 $scope.score += successShotPoints;
 
                 $scope.stage.removeChild(objectStructure.canvasObject);
-                var instance = createjs.Sound.play("sound_thunder");
+                var instance = createjs.Sound.play("sound_correct");
                 instance.volume = 0.5;
             } else {
                 $scope.score += wrongShotPoints;
+                var instance = createjs.Sound.play("sound_wrong");
+                instance.volume = 0.5;
             }
         };
 
@@ -340,7 +343,8 @@ angular.module('app')
              because users can surely touch more than 2 times in very small time duration.
              When we will use sound with smaller duration for destroy - we can probably remove this line.
              */
-            createjs.Sound.registerSound("content/thunder.ogg", "sound_thunder", 20);
+            createjs.Sound.registerSound("content/click-correct.mp3", "sound_correct", 20);
+            createjs.Sound.registerSound("content/click-wrong.mp3", "sound_wrong", 20);
             queue = new createjs.LoadQueue(false);
             queue.installPlugin(createjs.Sound);
             queue.addEventListener("complete", $scope.handleLoadComplete);
@@ -404,8 +408,7 @@ angular.module('app')
                 if (touchEvent.initiator != Player.getPlayer().name) { //if no then object was already removed
                     var objectToRemove = objectIdToCanvasObjectMap[touchEvent.objectId];
                     $scope.stage.removeChild(objectToRemove);
-                    //TODO use bad sounds here - user lose
-                    var instance = createjs.Sound.play("sound_thunder");
+                    var instance = createjs.Sound.play("sound_wrong");
                     instance.volume = 0.5;
                 }
             }
@@ -432,8 +435,11 @@ angular.module('app')
 
             if (isSuccessTouch) {
                 $scope.stage.removeChild(objectStructure.canvasObject);
-                var instance = createjs.Sound.play("sound_thunder");
-                instance.volume = 0.5;
+                var instance = createjs.Sound.play("sound_correct");
+                instance.volume = 1.0;
+            } else {
+                var instance = createjs.Sound.play("sound_wrong");
+                instance.volume = 1.0;
             }
         };
 
