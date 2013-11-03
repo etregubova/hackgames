@@ -20,8 +20,7 @@ angular.module('app')
                 $location.path() === '/duel/wait' ||
                 $location.path() === '/training' ||
                 $location.path() === '/duel/play' ||
-                $location.path() === '/duel/result' ||
-                !$scope.trainingEnded;
+                $location.path() === '/duel/result' || !$scope.trainingEnded;
         };
 
         $scope.hide_repeat = function () {
@@ -231,13 +230,13 @@ angular.module('app')
         $scope.handleObjectTouched = function (event, objectStructure) {
             if ($scope.isEatable == objectStructure.objectInfo.isEatable && $scope.color === objectStructure.objectInfo.color) {
                 $scope.score += successShotPoints;
+
+                $scope.stage.removeChild(objectStructure.canvasObject);
+                var instance = createjs.Sound.play("sound_thunder");
+                instance.volume = 0.5;
             } else {
                 $scope.score += wrongShotPoints;
             }
-
-            $scope.stage.removeChild(objectStructure.canvasObject);
-            var instance = createjs.Sound.play("sound_thunder");
-            instance.volume = 0.5;
         };
 
         $scope.updateStage = function (event) {
@@ -418,9 +417,12 @@ angular.module('app')
                 initiator: Player.getPlayer().name,
                 success: isSuccessTouch
             });
-            $scope.stage.removeChild(objectStructure.canvasObject);
-            var instance = createjs.Sound.play("sound_thunder");
-            instance.volume = 0.5;
+
+            if (isSuccessTouch) {
+                $scope.stage.removeChild(objectStructure.canvasObject);
+                var instance = createjs.Sound.play("sound_thunder");
+                instance.volume = 0.5;
+            }
         };
 
         $scope.updateStage = function (event) {
