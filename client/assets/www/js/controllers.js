@@ -7,24 +7,25 @@ angular.module('app')
         $scope.trainingEnded = false;
 
         $scope.back = function () {
+            $scope.trainingEnded = false;
             $rootScope.$broadcast('back');
         };
 
         $scope.repeat = function () {
             $scope.trainingEnded = false;
-            $location.path('/training');
+            $rootScope.$broadcast('training:reinit');
         };
 
         $scope.hide_back = function () {
             return $location.path() === '/registration' ||
                 $location.path() === '/duel/wait' ||
-                $location.path() === '/training' ||
+                ($location.path() === '/training' && !$scope.trainingEnded) ||
                 $location.path() === '/duel/play' ||
-                $location.path() === '/duel/result' || !$scope.trainingEnded;
+                $location.path() === '/duel/result';
         };
 
         $scope.hide_repeat = function () {
-            return !$scope.trainingEnded;
+            return !($location.path() === '/training' && $scope.trainingEnded);
         };
 
         $scope.$on('timer:ended', function () {
@@ -88,10 +89,17 @@ angular.module('app')
     })
 
     //THIS IS A COPY PASTE FROM DuelGameController. You have to duplicate all changes!!!
-    .controller('TrainingCtrl', ['$scope', 'Application', 'Player', 'socket', function ($scope, Application, Player, socket) {
+    .controller('TrainingCtrl', function ($scope, $location, Application, Player, socket) {
         $scope.$on('back', function () {
             $location.path('/menu');
         });
+
+        $scope.$on('training:reinit', function () {
+            $scope.score = 0;
+            $scope.timer = 30;
+            $scope.init();
+        });
+
 
         var queue;
 
@@ -244,7 +252,7 @@ angular.module('app')
         };
 
         $scope.init();
-    }])
+    })
 
     //THIS IS A COPY PASTE FROM TrainingController. You have to duplicate all changes!!!
     .controller('DuelGameCtrl', ['$scope', 'Application', 'Player', 'socket', '$location', function ($scope, Application, Player, socket, $location) {

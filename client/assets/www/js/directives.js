@@ -2,20 +2,6 @@
 
 angular.module('app')
 
-    .directive('back', function () {
-        return {
-            restrict: 'A',
-            link: function (scope, element, attrs) {
-                element.bind('click', goBack);
-
-                function goBack() {
-                    history.back();
-                    scope.$apply();
-                }
-            }
-        };
-    })
-
     .directive('rules', function ($timeout, $rootScope) {
         return function (scope, element, attrs) {
             var rounds;
@@ -142,6 +128,15 @@ angular.module('app')
             element.bind('$destroy', function () {
                 $timeout.cancel(timeoutId);
             });
+
+            scope.$on('training:reinit', function () {
+                element.removeClass('label-danger');
+                element.addClass('label-success');
+
+                seconds = 30;
+                updateTime();
+                updateLater();
+            });
         };
     })
 
@@ -200,19 +195,5 @@ angular.module('app')
             }, false);
 
             element.click();
-        };
-    })
-
-    .directive('field', function () {
-        return function (scope, element, attrs) {
-            if (element[0].getContext) {
-                var context = element[0].getContext('2d');
-
-                context.canvas.width = 250;
-                context.canvas.height = 250;
-
-                context.fillStyle = "rgb(60,60,60)";
-                context.fillRect(0, 0, context.canvas.width, context.canvas.height);
-            }
         };
     });
