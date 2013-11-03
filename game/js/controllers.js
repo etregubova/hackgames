@@ -9,7 +9,7 @@ angular.module('app')
     .controller('SplashCtrl', function ($scope, $rootScope, socket, Application) {
     })
 
-    .controller('DuelGameCtrl', ['$scope', 'Application', 'socket', '$location', function ($scope, Application, socket, $location) {
+    .controller('GameCtrl', ['$scope', 'Application', 'socket', '$location', function ($scope, Application, socket, $location) {
         var queue;
 
         var manifest = [
@@ -124,12 +124,12 @@ angular.module('app')
             if (point.x == 0) {
                 point.x -= IMAGE_SIZE;
             } else {
-                point.x += IMAGE_SIZE / 2;
+                point.x += 3 * IMAGE_SIZE;// / 2;
             }
             if (point.y == 0) {
                 point.y -= IMAGE_SIZE;
             } else {
-                point.y += IMAGE_SIZE / 2;
+                point.y += IMAGE_SIZE;// / 2;
             }
             return point
         };

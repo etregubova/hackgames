@@ -15,7 +15,7 @@ angular.module('app')
             }
         };
 
-        var currentDuel = {};
+        var currentDuel;
 
         socket.on('duel:start', function (duel) {
             if (!currentDuel) {
@@ -25,7 +25,8 @@ angular.module('app')
         });
 
         socket.on('duel:end', function (duelId) {
-            if (!currentDuel && currentDuel.id === duelId) {
+            console.log(duelId)
+            if (currentDuel && currentDuel.id === duelId) {
                 currentDuel = null;
                 $location.path('/splash');
             }
