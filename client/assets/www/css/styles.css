@@ -18,11 +18,3 @@
     width: auto;
     display: block;
 }
-
-.rule-span-left {
-    border-left: 1px solid #646464;
-}
-
-.rule-span-right {
-    border-right: 1px solid #646464;
-}

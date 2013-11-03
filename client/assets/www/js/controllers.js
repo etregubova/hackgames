@@ -10,7 +10,7 @@ angular.module('app')
 
         $scope.hide = function () {
             return $location.path() === '/registration' ||
-                $location.path() === '/duel' ||
+                $location.path() === '/duel/wait' ||
                 $location.path() === '/training' ||
                 $location.path() === '/duel/play' ||
                 $location.path() === '/duel/result';
