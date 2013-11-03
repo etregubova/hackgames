@@ -138,11 +138,11 @@ angular.module('app')
             {id: "y0-frog", src: "content/flying/y0-frog.png"},
             {id: "y0-lampbulb", src: "content/flying/y0-lampbulb.png"},
 
-            {id: "y1-banana", src: "content/flying/y0-banana.png"},
-            {id: "y1-cake", src: "content/flying/y0-cake.png"},
-            {id: "y1-fries", src: "content/flying/y0-fries.png"},
-            {id: "y1-honey", src: "content/flying/y0-honey.png"},
-            {id: "y1-lemon", src: "content/flying/y0-lemon.png"}
+            {id: "y1-banana", src: "content/flying/y1-banana.png"},
+            {id: "y1-cake", src: "content/flying/y1-cake.png"},
+            {id: "y1-fries", src: "content/flying/y1-fries.png"},
+            {id: "y1-honey", src: "content/flying/y1-honey.png"},
+            {id: "y1-lemon", src: "content/flying/y1-lemon.png"}
         ];
 
         var successShotPoints;
@@ -189,7 +189,7 @@ angular.module('app')
             /* Setting up game canvas related objects. */
             for (var i in $scope.scenario.objects) {
                 var obj = $scope.scenario.objects[i];
-                /*console.log("Initialization of object, id=" + obj.id);*/
+                console.log("Initialization of object, id=" + obj.id);
 
                 var object = new createjs.Bitmap(queue.getResult(obj.type));
                 var from_ = $scope.adjustBorderlineCoordinate(obj.from);
@@ -293,11 +293,11 @@ angular.module('app')
             {id: "y0-frog", src: "content/flying/y0-frog.png"},
             {id: "y0-lampbulb", src: "content/flying/y0-lampbulb.png"},
 
-            {id: "y1-banana", src: "content/flying/y0-banana.png"},
-            {id: "y1-cake", src: "content/flying/y0-cake.png"},
-            {id: "y1-fries", src: "content/flying/y0-fries.png"},
-            {id: "y1-honey", src: "content/flying/y0-honey.png"},
-            {id: "y1-lemon", src: "content/flying/y0-lemon.png"}
+            {id: "y1-banana", src: "content/flying/y1-banana.png"},
+            {id: "y1-cake", src: "content/flying/y1-cake.png"},
+            {id: "y1-fries", src: "content/flying/y1-fries.png"},
+            {id: "y1-honey", src: "content/flying/y1-honey.png"},
+            {id: "y1-lemon", src: "content/flying/y1-lemon.png"}
         ];
 
         $scope.duel = Application.getCurrentDuel();

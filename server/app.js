@@ -359,7 +359,7 @@ function generateObjects(gameFieldSize) {
     for (var i = 0; i < ROUNDS_COUNT * ROUND_DURATION; i++) {
         for (var j = 0; j < OBJECTS_PER_SECOND; j++) {
             var object = {};
-            object.id = id++;
+            object.id = id;
 
             var behavior = OBJECTS_LIST[getRandomInt(0, OBJECTS_LIST.length - 1)];
             object.type = behavior.type;
@@ -373,7 +373,8 @@ function generateObjects(gameFieldSize) {
             object.from = path.from;
             object.to = path.to;
 
-            objects[i] = object;
+            objects[id] = object;
+            id++;
         }
     }
     return objects;
