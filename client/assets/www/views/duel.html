@@ -1,7 +1,10 @@
 <div class="container">
     <div class="well">
-        <h5>Очки: <span class="badge">{{score}}</span>
-            Очки: <span class="badge">{{score}}</span>
+
+        <h5>
+            <!--TODO show me first and competitor second-->
+            {{duel.player1.name}}: <span class="badge">{{duel.player1.score}}</span>
+            {{duel.player2.name}}: <span class="badge">{{duel.player2.score}} </span>
             <span class="pull-right" timer="30"></span></h5>
         <hr>
 
@@ -13,14 +16,20 @@
                         Your browser does not support canvas
                     </canvas>
                 </div>
-                <div>
-                    <a href=""><img src="img/rainbow.png"/></a>
-                    :
-                    <a href=""><img src="img/spoon.png"/></a>
+                <div rules="rounds">
+                    <div class="pull-left rule-span-right">
+                        <span class="rule-span"><a href=""><img src="img/rainbow.png"/></a></span>
+                        <i class="fa fa-chevron-right fa-fw"></i>
+                        <span class="rule-span"><a href=""><img ng-src="{{curIsEatable}}"/></a></span>
+                    </div>
+                    <div class="pull-right rule-span-left">
+                        <span class="rule-span"><a href=""><img src="img/spoon.png"/></a></span>
+                        <i class="fa fa-chevron-right fa-fw"></i>
+                        <span class="rule-span"><a href=""><img ng-src="{{curColor}}"/></a></span>
+                    </div>
                 </div>
             </div>
             <div class="col-md-4"></div>
         </div>
     </div>
 </div>
-

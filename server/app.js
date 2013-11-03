@@ -22,9 +22,20 @@ var duelID = 0;
 var duels = [];
 
 var getPlayerByName = function (name) {
+    //TODO cache for better performance
     for (var index = 0; index < players.length; ++index) {
         if (players[index].name === name) {
             return players[index];
+        }
+    }
+};
+
+var getDuelById = function (id) {
+    //TODO cache for better performance
+    for (var index = 0; index < duels.length; ++index) {
+        var duel = duels[index];
+        if (duel.id == id) {
+            return duel;
         }
     }
 };
@@ -96,42 +107,40 @@ io.sockets.on('connection', function (socket) {
         console.log('Event received game:pitergrad:touch ' + touchEvent.initiator + touchEvent.objectId);
 
         //find duel.. TODO use map instead of loop through array
-        for (var index = 0; index < duels.length; ++index) {
-            var duel = duels[index];
-            if (duel.id == touchEvent.duelId) {
-                if (duel.player1.name == touchEvent.initiator) {
-                    duel.player1.score++;
-                } else {
-                    duel.player2.score++;
-                }
+        var duel = getDuelById(touchEvent.duelId);
 
-                //send duel with scores to clients
-                touchEvent.duel = duel;
-                break;
+        if (duel.player1.name == touchEvent.initiator) {
+            if (touchEvent.success) {
+                duel.player1.score += duel.scenario.successShotPoints;
+            } else {
+                duel.player1.score += duel.scenario.wrongShotPoints;
+            }
+        } else {
+            if (touchEvent.success) {
+                duel.player2.score += duel.scenario.successShotPoints;
+            } else {
+                duel.player2.score += duel.scenario.wrongShotPoints;
             }
         }
+
+        //send duel with scores to clients
+        touchEvent.duel = duel;
 
         //TODO send only to players in current duel. It will be better for performance
         io.sockets.emit('game:pitergrad:touch', touchEvent)
     });
 
     socket.on('game:pitergrad:end', function (data, callback) {
-        for (var index = 0; index < duels.length; ++index) {
-            var duel = duels[index];
-            if (duel.id == data.duelId) {
-                if (duel.status == 'completed') { //we should update rating only once
-                    break;
-                }
-                duel.status = 'completed';
-                //update rating
-                var firstPlayer = getPlayerByName(duel.player1.name);
-                var secondPlayer = getPlayerByName(duel.player2.name);
-                firstPlayer.score += duel.player1.score;
-                firstPlayer.tournaments++;
-                secondPlayer.score += duel.player2.score;
-                secondPlayer.tournaments++;
-                break;
-            }
+        var duel = getDuelById(data.duelId);
+        if (duel.status != 'completed') { //we should update rating only once
+            duel.status = 'completed';
+            //update rating
+            var firstPlayer = getPlayerByName(duel.player1.name);
+            var secondPlayer = getPlayerByName(duel.player2.name);
+            firstPlayer.score += duel.player1.score;
+            firstPlayer.tournaments++;
+            secondPlayer.score += duel.player2.score;
+            secondPlayer.tournaments++;
         }
         callback();
     });
@@ -153,19 +162,19 @@ io.sockets.on('connection', function (socket) {
         console.log('Event received game:training');
 
         /*! Temporary it was decided to set default gameFieldSize 250x250, uncomment this block if needed:
-        var gameFieldSize;
-        socket.get('player', function (err, playerName) {
-            console.log('Event :' + playerName);
+         var gameFieldSize;
+         socket.get('player', function (err, playerName) {
+         console.log('Event :' + playerName);
 
-            for (var index = 0; index < players.length; ++index) {
-                if (players[index].name === playerName) {
-                    gameFieldSize = players[index].gameFieldSize;
-                    break;
-                }
-            }
-        });
-        */
-        var gameFieldSize = {width : 250, height : 250};
+         for (var index = 0; index < players.length; ++index) {
+         if (players[index].name === playerName) {
+         gameFieldSize = players[index].gameFieldSize;
+         break;
+         }
+         }
+         });
+         */
+        var gameFieldSize = {width: 250, height: 250};
         callback(generateScenario(gameFieldSize));
     });
 
@@ -175,7 +184,7 @@ function handleDuelRequest(socket) {
     socket.get('player', function (err, playerName) {
         var notStartedDuels = duels.filter(function (duel) {
             return duel.status === 'waiting';
-        })
+        });
 
         if (notStartedDuels.length > 0) {
             var duel = notStartedDuels[0];
@@ -187,22 +196,23 @@ function handleDuelRequest(socket) {
             duel.player2.name = playerName;
             duel.player2.score = 0;
 
-
-            var gameFieldSize1;
-            var gameFieldSize2;
-            for (var index = 0; index < players.length; index++) {
-                if (players[index].name === duel.player1.name) {
-                    gameFieldSize1 = players[index].gameFieldSize;
-                }
-                if (players[index].name === duel.player2.name) {
-                    gameFieldSize2 = players[index].gameFieldSize;
-                }
-            }
-
-            duel.scenarios = new Array();
-            var scenario1 = generateScenario(gameFieldSize1);
-            duel.scenarios[duel.player1.name] = scenario1;
-            duel.scenarios[duel.player2.name] = resizeScenario(scenario1, gameFieldSize1, gameFieldSize2);
+//            Temporary it was decided to set default gameFieldSize 250x250, uncomment this block if needed:
+//            var gameFieldSize1;
+//            var gameFieldSize2;
+//            for (var index = 0; index < players.length; index++) {
+//                if (players[index].name === duel.player1.name) {
+//                    gameFieldSize1 = players[index].gameFieldSize;
+//                }
+//                if (players[index].name === duel.player2.name) {
+//                    gameFieldSize2 = players[index].gameFieldSize;
+//                }
+//            }
+            var gameFieldSize = {width: 250, height: 250};
+            duel.scenario = generateScenario(gameFieldSize);
+//            duel.scenarios = new Array();
+//            var scenario1 = generateScenario(gameFieldSize1);
+//            duel.scenarios[duel.player1.name] = scenario1;
+//            duel.scenarios[duel.player2.name] = resizeScenario(scenario1, gameFieldSize1, gameFieldSize2);
 
             console.log(duel);
 
@@ -239,9 +249,6 @@ function cancelDuelRequest(socket, callback) {
 }
 
 
-
-
-
 /**
  *
  *
@@ -265,14 +272,13 @@ function generateScenario(gameFieldSize) {
 function generateRounds() {
     var rounds = new Array();
 
-    for (var i = 0; i < ROUNDS_COUNT; i++)
-    {
+    for (var i = 0; i < ROUNDS_COUNT; i++) {
         var round = {};
         round.id = i;
         round.delayTimeSeconds = i * ROUND_DURATION;
 
         round.isEatable = getRandomInt(0, 1) == 1 ? true : false;
-        round.color = COLORS[getRandomInt(0, COLORS.length-1)];
+        round.color = COLORS[getRandomInt(0, COLORS.length - 1)];
         round.duration = ROUND_DURATION;
         rounds[i] = round;
     }
@@ -287,8 +293,8 @@ var BLUE = 'blue';
 var COLORS = [YELLOW, RED, GREEN, BLUE];
 
 var OBJECTS_LIST = [
-    {type : 'image_bird', isEatable : false, color : BLUE},
-    {type : 'image_book', isEatable : false, color : BLUE}
+    {type: 'image_bird', isEatable: false, color: BLUE},
+    {type: 'image_book', isEatable: false, color: BLUE}
 ];
 
 var OBJECTS_PER_SECOND = 4;
@@ -297,8 +303,7 @@ function generateObjects(gameFieldSize) {
     var objects = new Array();
 
     var id = 0;
-    for (var i = 0; i < ROUNDS_COUNT * ROUND_DURATION; i++)
-    {
+    for (var i = 0; i < ROUNDS_COUNT * ROUND_DURATION; i++) {
         for (var j = 0; j < OBJECTS_PER_SECOND; j++) {
             var object = {};
             object.id = id++;
@@ -306,7 +311,7 @@ function generateObjects(gameFieldSize) {
             var behavior = OBJECTS_LIST[getRandomInt(0, OBJECTS_LIST.length - 1)];
             object.type = behavior.type;
             object.isEatable = behavior.isEatable;
-            object.color =  behavior.color;
+            object.color = behavior.color;
 
             object.delayTimeMillis = i * 1000 + getRandomInt(0, 1000);
             object.availableMillis = 3500 + getRandomInt(0, 1500);
@@ -327,34 +332,28 @@ function generatePath(gameFieldSize) {
 
     var from = {};
     var to = {};
-    if (isHorizontal)
-    {
-        if (isReverse)
-        {
+    if (isHorizontal) {
+        if (isReverse) {
             from.x = gameFieldSize.width;
             to.x = 0;
             from.y = getRandomInt(0, gameFieldSize.height);
             to.y = getRandomInt(0, gameFieldSize.height);
         }
-        else
-        {
+        else {
             from.x = 0;
             to.x = gameFieldSize.width;
             from.y = getRandomInt(0, gameFieldSize.height);
             to.y = getRandomInt(0, gameFieldSize.height);
         }
     }
-    else
-    {
-        if (isReverse)
-        {
+    else {
+        if (isReverse) {
             from.x = getRandomInt(0, gameFieldSize.width);
             to.x = getRandomInt(0, gameFieldSize.width);
             from.y = gameFieldSize.height;
             to.y = 0;
         }
-        else
-        {
+        else {
             from.x = getRandomInt(0, gameFieldSize.width);
             to.x = getRandomInt(0, gameFieldSize.width);
             from.y = 0;
@@ -369,8 +368,7 @@ function generatePath(gameFieldSize) {
     return trace;
 }
 
-function getRandomInt(min, max)
-{
+function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 

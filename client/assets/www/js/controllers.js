@@ -130,7 +130,7 @@ angular.module('app')
                 var from_ = $scope.adjustBorderlineCoordinate(obj.from);
                 object.x = from_.x;
                 object.y = from_.y;
-                object.on("click", $scope.handleObjectTouched, null, true, {canvasObject : object, objectInfo : obj});
+                object.on("click", $scope.handleObjectTouched, null, true, {canvasObject: object, objectInfo: obj});
 
                 var to_ = $scope.adjustBorderlineCoordinate(obj.to);
                 createjs.Tween.get(object).wait(obj.delayTimeMillis).to({x: to_.x, y: to_.y}, obj.availableMillis);
@@ -163,7 +163,7 @@ angular.module('app')
          * @param object   the object
          */
         $scope.handleObjectTouched = function (event, objectStructure) {
-            if ($scope.isEatable == objectStructure.objectInfo.isEatable  && $scope.color === objectStructure.objectInfo.color) {
+            if ($scope.isEatable == objectStructure.objectInfo.isEatable && $scope.color === objectStructure.objectInfo.color) {
                 $scope.score += successShotPoints;
             } else {
                 $scope.score += wrongShotPoints;
@@ -203,6 +203,10 @@ angular.module('app')
          * Initializes and loads resources.
          */
         $scope.init = function () {
+
+            $scope.scenario = Application.getCurrentDuel().scenario;
+            $scope.rounds = Application.getCurrentDuel().scenario.rounds;
+
             $scope.stage = new createjs.Stage("gameCanvas");
             createjs.Touch.enable($scope.stage);
 
@@ -221,16 +225,7 @@ angular.module('app')
             queue.loadManifest(manifest);
         }
 
-        var objects = [
-            {id: 1, type: 'image_bird', delayTimeMillis: 200, availableMillis: 7000, from: {x: 0, y: 150}, to: {x: 800, y: 300}},
-            {id: 2, type: 'image_book', delayTimeMillis: 700, availableMillis: 7500, from: {x: 100, y: 0}, to: {x: 800, y: 200}},
-            {id: 3, type: 'image_book', delayTimeMillis: 1000, availableMillis: 6000, from: {x: 300, y: 0}, to: {x: 800, y: 600}},
-            {id: 4, type: 'image_bird', delayTimeMillis: 2100, availableMillis: 6500, from: {x: 800, y: 50}, to: {x: 200, y: 600}},
-            {id: 5, type: 'image_book', delayTimeMillis: 2000, availableMillis: 5700, from: {x: 800, y: 40}, to: {x: 0, y: 550}},
-            {id: 6, type: 'image_bird', delayTimeMillis: 3000, availableMillis: 5900, from: {x: 500, y: 0}, to: {x: 0, y: 600}}
-        ]
-
-        var objectIdToObjectMap = {};
+        var objectIdToCanvasObjectMap = {};
 
         /*!
          * Initializes game board, prepares all objects.
@@ -239,17 +234,20 @@ angular.module('app')
          * @param event   resource loaded complete event
          */
         $scope.handleLoadComplete = function (event) {
-            for (var i in objects) {
-                var obj = objects[i];
-                console.log("Initialization of object, id=" + obj.id);
+
+            /* Setting up game canvas related objects. */
+            for (var i in $scope.scenario.objects) {
+                var obj = $scope.scenario.objects[i];
+                /*console.log("Initialization of object, id=" + obj.id);*/
 
                 var object = new createjs.Bitmap(queue.getResult(obj.type));
                 var from_ = $scope.adjustBorderlineCoordinate(obj.from);
                 object.x = from_.x;
                 object.y = from_.y;
-                object.on("click", $scope.handleObjectTouched, null, true, {object: object, objectId: obj.id});
 
-                objectIdToObjectMap[obj.id] = object;
+                objectIdToCanvasObjectMap[obj.id] = object;
+                object.on("click", $scope.handleObjectTouched, null, true, {canvasObject: object, objectInfo: obj});
+
                 var to_ = $scope.adjustBorderlineCoordinate(obj.to);
                 createjs.Tween.get(object).wait(obj.delayTimeMillis).to({x: to_.x, y: to_.y}, obj.availableMillis);
 
@@ -282,7 +280,7 @@ angular.module('app')
                 Application.updateCurrentDuelScore(touchEvent.duel);
 
                 if (touchEvent.initiator != Player.getPlayer().name) { //if no then object was already removed
-                    var objectToRemove = objectIdToObjectMap[touchEvent.objectId];
+                    var objectToRemove = objectIdToCanvasObjectMap[touchEvent.objectId];
                     $scope.stage.removeChild(objectToRemove);
                     //TODO use bad sounds here - user lose
                     var instance = createjs.Sound.play("sound_thunder");
@@ -297,14 +295,19 @@ angular.module('app')
          * @param event   object clicked/touched event
          * @param object   the object
          */
-        $scope.handleObjectTouched = function (event, objectInfo) {
+        $scope.handleObjectTouched = function (event, objectStructure) {
             //TODO item is deleted from screen before socket answer for better user experience
+            var isSuccessTouch =
+                $scope.isEatable === objectStructure.objectInfo.isEatable &&
+                    $scope.color === objectStructure.objectInfo.color;
+
             socket.emit("game:pitergrad:touch", {
-                objectId: objectInfo.objectId,
+                objectId: objectStructure.objectInfo.id,
                 duelId: Application.getCurrentDuel().id,
-                initiator: Player.getPlayer().name
+                initiator: Player.getPlayer().name,
+                success: isSuccessTouch
             });
-            $scope.stage.removeChild(objectInfo.object);
+            $scope.stage.removeChild(objectStructure.canvasObject);
             var instance = createjs.Sound.play("sound_thunder");
             instance.volume = 0.5;
         };
