@@ -64,11 +64,8 @@ angular.module('app')
             {id: "image_poo", src: "content/poo_64.gif"}
         ];
 
-        var scenario;
         var successShotPoints;
         var wrongShotPoints;
-        var isEatable;
-        var color;
         $scope.score = 0;
 
         /*!
@@ -76,7 +73,8 @@ angular.module('app')
          */
         $scope.init = function () {
             socket.emit('game:training', {}, function (s) {
-                scenario = s;
+                $scope.scenario = s;
+                $scope.rounds = s.rounds;
             });
 
             $scope.stage = new createjs.Stage("gameCanvas");
@@ -104,25 +102,12 @@ angular.module('app')
          * @param event   resource loaded complete event
          */
         $scope.handleLoadComplete = function (event) {
-            successShotPoints = scenario.successShotPoints;
-            wrongShotPoints = scenario.wrongShotPoints;
-
-            /* Setting up timeouts for round rules. */
-            for (var i in scenario.rounds) {
-                var round = scenario.rounds[i];
-                var timeoutMillis = round.delayTimeSeconds * 1000;
-                console.log("isEatable :" + round.isEatable + ", color :" + round.color);
-
-                setTimeout(function() {
-                    isEatable = round.isEatable; color = round.color;
-                    // TODO: need to fix this timeout logic, it does not change properties
-                    /*console.log("isEatable :" + round.isEatable + ", color :" + round.color);*/
-                }, timeoutMillis);
-            }
+            successShotPoints = $scope.scenario.successShotPoints;
+            wrongShotPoints = $scope.scenario.wrongShotPoints;
 
             /* Setting up game canvas related objects. */
-            for (var i in scenario.objects) {
-                var obj = scenario.objects[i];
+            for (var i in $scope.scenario.objects) {
+                var obj = $scope.scenario.objects[i];
                 /*console.log("Initialization of object, id=" + obj.id);*/
 
                 var object = new createjs.Bitmap(queue.getResult(obj.type));
@@ -162,7 +147,7 @@ angular.module('app')
          * @param object   the object
          */
         $scope.handleObjectTouched = function (event, objectStructure) {
-            if (isEatable == objectStructure.objectInfo.isEatable  && color === objectStructure.objectInfo.color) {
+            if ($scope.isEatable == objectStructure.objectInfo.isEatable  && $scope.color === objectStructure.objectInfo.color) {
                 $scope.score += successShotPoints;
             } else {
                 $scope.score += wrongShotPoints;
