@@ -4,17 +4,33 @@
 
 angular.module('app')
     .controller('AppCtrl', function ($scope, $rootScope, $location, Application) {
+        $scope.trainingEnded = false;
+
         $scope.back = function () {
             $rootScope.$broadcast('back');
         };
 
-        $scope.hide = function () {
+        $scope.repeat = function () {
+            $scope.trainingEnded = false;
+            $location.path('/training');
+        };
+
+        $scope.hide_back = function () {
             return $location.path() === '/registration' ||
                 $location.path() === '/duel/wait' ||
                 $location.path() === '/training' ||
                 $location.path() === '/duel/play' ||
-                $location.path() === '/duel/result';
+                $location.path() === '/duel/result' ||
+                !$scope.trainingEnded;
         };
+
+        $scope.hide_repeat = function () {
+            return !$scope.trainingEnded;
+        };
+
+        $scope.$on('timer:ended', function () {
+            $scope.trainingEnded = true;
+        });
     })
 
     .controller('MenuCtrl', function ($scope, $location, $window, Player) {
@@ -74,6 +90,10 @@ angular.module('app')
 
     //THIS IS A COPY PASTE FROM DuelGameController. You have to duplicate all changes!!!
     .controller('TrainingCtrl', ['$scope', 'Application', 'Player', 'socket', function ($scope, Application, Player, socket) {
+        $scope.$on('back', function () {
+            $location.path('/menu');
+        });
+
         var queue;
 
         var manifest = [
