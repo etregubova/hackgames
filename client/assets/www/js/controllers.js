@@ -64,6 +64,10 @@ angular.module('app')
             $scope.players.push(player);
         });
 
+        socket.on('rating:updated', function (players) {
+            $scope.players = players;
+        });
+
         socket.on('player:removed', function (playerName) {
             for (var index = 0; index < $scope.players.length; ++index) {
                 if ($scope.players[index].name === playerName) {

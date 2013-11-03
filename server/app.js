@@ -149,6 +149,7 @@ io.sockets.on('connection', function (socket) {
             firstPlayer.tournaments++;
             secondPlayer.score += duel.player2.score;
             secondPlayer.tournaments++;
+            io.sockets.emit('rating:updated', players)
         }
         callback();
     });
