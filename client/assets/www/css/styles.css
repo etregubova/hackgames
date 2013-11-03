@@ -18,3 +18,17 @@
     width: auto;
     display: block;
 }
+
+h5 {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+hr {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.well {
+    padding: 10px;
+}
