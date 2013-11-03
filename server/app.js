@@ -148,6 +148,24 @@ io.sockets.on('connection', function (socket) {
             }
         });
     });
+
+    socket.on('game:training', function (object, callback) {
+        console.log('Event received game:training');
+
+        var gameFieldSize;
+        socket.get('player', function (err, playerName) {
+            console.log('Event :' + playerName);
+
+            for (var index = 0; index < players.length; ++index) {
+                if (players[index].name === playerName) {
+                    gameFieldSize = players[index].gameFieldSize;
+                    break;
+                }
+            }
+        });
+        callback(generateScenario(gameFieldSize));
+    });
+
 });
 
 function handleDuelRequest(socket) {
@@ -165,6 +183,25 @@ function handleDuelRequest(socket) {
             duel.player2 = {};
             duel.player2.name = playerName;
             duel.player2.score = 0;
+
+
+            var gameFieldSize1;
+            var gameFieldSize2;
+            for (var index = 0; index < players.length; index++) {
+                if (players[index].name === duel.player1.name) {
+                    gameFieldSize1 = players[index].gameFieldSize;
+                }
+                if (players[index].name === duel.player2.name) {
+                    gameFieldSize2 = players[index].gameFieldSize;
+                }
+            }
+
+            duel.scenarios = new Array();
+            var scenario1 = generateScenario(gameFieldSize1);
+            duel.scenarios[duel.player1.name] = scenario1;
+            duel.scenarios[duel.player2.name] = resizeScenario(scenario1, gameFieldSize1, gameFieldSize2);
+
+            console.log(duel);
 
             io.sockets.emit('duel:start', duel);
         } else {
@@ -201,3 +238,181 @@ function cancelDuelRequest(socket, callback) {
 
 
 
+
+/**
+ *
+ *
+ * Need to move to separate file.
+ *
+ *
+ */
+var ROUND_DURATION = 5;
+var ROUNDS_COUNT = 6;
+
+function generateScenario(gameFieldSize) {
+    var scenario = {}
+    scenario.duration = ROUND_DURATION * ROUNDS_COUNT;
+    scenario.successShotPoints = 200;
+    scenario.wrongShotPoints = -100;
+    scenario.rounds = generateRounds();
+    scenario.objects = generateObjects(gameFieldSize);
+    return scenario;
+}
+
+function generateRounds() {
+    var rounds = new Array();
+
+    for (var i = 0; i < ROUNDS_COUNT; i++)
+    {
+        var round = {};
+        round.id = i;
+        round.delayTimeSeconds = i * ROUND_DURATION;
+
+        round.isEatable = getRandomInt(0, 1) == 1 ? true : false;
+        round.color = COLORS[getRandomInt(0, COLORS.size-1)];
+        round.duration = ROUND_DURATION;
+        rounds[i] = round;
+    }
+
+    return rounds;
+}
+
+var YELLOW = 'yellow';
+var RED = 'red';
+var GREEN = 'green';
+var BLUE = 'blue';
+var COLORS = [YELLOW, RED, GREEN, BLUE];
+
+var OBJECTS_LIST = [
+    {type : 'image_pizza', isEatable : true, color : YELLOW},
+    {type : 'image_poo', isEatable : false, color : RED}
+];
+
+var OBJECTS_PER_SECOND = 4;
+
+function generateObjects(gameFieldSize) {
+    var objects = new Array();
+
+    var id = 0;
+    for (var i = 0; i < ROUNDS_COUNT * ROUND_DURATION; i++)
+    {
+        for (var j = 0; j < OBJECTS_PER_SECOND; j++) {
+            var object = {};
+            object.id = id++;
+
+            var behavior = OBJECTS_LIST[getRandomInt(0, OBJECTS_LIST.length - 1)];
+            object.type = behavior.type;
+            object.isEatable = behavior.isEatable;
+            object.color =  behavior.color;
+
+            object.delayTimeMillis = i * 1000 + getRandomInt(0, 1000);
+            object.availableMillis = 5500 + getRandomInt(0, 2500);
+
+            var path = generatePath(gameFieldSize);
+            object.from = path.from;
+            object.to = path.to;
+
+            objects[i] = object;
+        }
+    }
+    return objects;
+}
+
+function generatePath(gameFieldSize) {
+    var isHorizontal = getRandomInt(0, 1) == 1 ? true : false;
+    var isReverse = getRandomInt(0, 1) == 1 ? true : false;
+
+    var from = {};
+    var to = {};
+    if (isHorizontal)
+    {
+        if (isReverse)
+        {
+            from.x = gameFieldSize.width;
+            to.x = 0;
+            from.y = getRandomInt(0, gameFieldSize.height);
+            to.y = getRandomInt(0, gameFieldSize.height);
+        }
+        else
+        {
+            from.x = 0;
+            to.x = gameFieldSize.width;
+            from.y = getRandomInt(0, gameFieldSize.height);
+            to.y = getRandomInt(0, gameFieldSize.height);
+        }
+    }
+    else
+    {
+        if (isReverse)
+        {
+            from.x = getRandomInt(0, gameFieldSize.width);
+            to.x = getRandomInt(0, gameFieldSize.width);
+            from.y = gameFieldSize.height;
+            to.y = 0;
+        }
+        else
+        {
+            from.x = getRandomInt(0, gameFieldSize.width);
+            to.x = getRandomInt(0, gameFieldSize.width);
+            from.y = 0;
+            to.y = gameFieldSize.height;
+        }
+    }
+
+    var trace = {};
+    trace.from = from;
+    trace.to = to;
+
+    return trace;
+}
+
+function getRandomInt(min, max)
+{
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function resizeScenario(scenario, gameFieldSize, newGameFieldSize) {
+    var newScenario = {};
+
+    newScenario.duration = scenario.duration;
+    newScenario.successShotPoints = scenario.successShotPoints;
+    newScenario.wrongShotPoints = scenario.wrongShotPoints;
+
+    newScenario.rounds = new Array();
+    for (var i = 0; i < scenario.rounds.size; i++) {
+        var round = scenario.rounds[i];
+        var newRound = {};
+
+        newRound.id = round.id;
+        newRound.delayTimeSeconds = round.delayTimeSeconds;
+        newRound.duration = round.duration;
+        newRound.isEatable = round.isEatable;
+        newRound.color = round.color;
+
+        newScenario.rounds[i] = newRound;
+    }
+
+    newScenario.objects = new Array();
+    for (var i = 0; i < scenario.objects.size; i++) {
+        var object = scenario.objects[i];
+        var newObject = {};
+
+        newObject.id = object.id;
+        newObject.type = object.type;
+        newObject.delayTimeMillis = object.delayTimeMillis;
+        newObject.availableMillis = object.availableMillis;
+        newObject.isEatable = object.isEatable;
+        newObject.color = object.color;
+
+        newObject.from = {};
+        newObject.from.x = Math.floor(object.from.x * newGameFieldSize.width / gameFieldSize.width);
+        newObject.from.y = Math.floor(object.from.y * newGameFieldSize.height / gameFieldSize.height);
+        newObject.to = {};
+        newObject.to.x = Math.floor(object.to.x * newGameFieldSize.width / gameFieldSize.width);
+        newObject.to.y = Math.floor(object.to.y * newGameFieldSize.height / gameFieldSize.height);
+
+        newScenario.objects[i] = newObject;
+    }
+
+    return newScenario;
+}
