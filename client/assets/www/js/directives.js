@@ -17,11 +17,11 @@ angular.module('app')
     })
 
     .directive('rules', function ($timeout, $rootScope) {
-        // return the directive link function. (compile function not needed)
         return function (scope, element, attrs) {
             var rounds;
             var timeoutId;
             var curIndex = 0;
+
             var passedSeconds = 0;
 
             function updateRule() {
@@ -31,26 +31,28 @@ angular.module('app')
                     if (curIndex > rounds.length) {
                         $timeout.cancel(timeoutId);
                     } else {
-                        scope.isEatable = rounds[curIndex].isEatable;
-                        scope.color = rounds[curIndex].color;
                         console.log(scope.isEatable + " : " + scope.color);
                     }
                 } else {
                     passedSeconds++;
                 }
+
+                if (curIndex < rounds.length) {
+                    setIsEatable(rounds[curIndex].isEatable);
+                    setColor(rounds[curIndex].color);
+                }
             }
 
-            // watch the expression, and update the UI on change.
             scope.$watch(attrs.rules, function (value) {
                 rounds = value;
                 if (!rounds) {
                     return;
                 }
+
                 updateRule();
                 updateLater();
             });
 
-            // schedule update in one second
             function updateLater() {
                 if (curIndex < rounds.length) {
                     // save the timeoutId for canceling
@@ -61,8 +63,30 @@ angular.module('app')
                 }
             }
 
-            // listen on DOM destroy (removal) event, and cancel the next UI update
-            // to prevent updating time ofter the DOM element was removed.
+            function setIsEatable(isEatable) {
+                scope.isEatable = isEatable;
+                scope.curIsEatable = isEatable ? 'content/image/eatable.png' : 'content/image/not-eatable.png';
+            }
+
+            function setColor(color) {
+                scope.color = color;
+
+                switch (color) {
+                    case 'blue':
+                        scope.curColor = 'content/image/blue.png';
+                        break;
+                    case 'yellow':
+                        scope.curColor = 'content/image/yellow.png';
+                        break;
+                    case 'green':
+                        scope.curColor = 'content/image/green.png';
+                        break;
+                    case 'red':
+                        scope.curColor = 'content/image/red.png';
+                        break;
+                }
+            }
+
             element.bind('$destroy', function () {
                 $timeout.cancel(timeoutId);
             });
