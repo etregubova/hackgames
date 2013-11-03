@@ -3,25 +3,40 @@
 /* Controllers */
 
 angular.module('app')
-    .controller('AppCtrl', ['$scope', '$window', 'Application', function ($scope, $window, Application) {
-    }])
+    .controller('AppCtrl', function ($scope, $rootScope, $location, Application) {
+        $scope.back = function () {
+            $rootScope.$broadcast('back');
+        };
 
-    .controller('MenuCtrl', function ($scope, $location, $window, Application, Player) {
-        var canvasWidth = $window.innerWidth - 62;
-        var canvasHeight = $window.innerHeight - 170;
+        $scope.hide = function () {
+            return $location.path() === '/registration' ||
+                $location.path() === '/duel/wait' ||
+                $location.path() === '/training' ||
+                $location.path() === '/duel/play';
+        };
+    })
 
-        Application.setFieldSize(canvasWidth, canvasHeight);
-
+    .controller('MenuCtrl', function ($scope, $location, $window, Player) {
         $scope.exit = function () {
             Player.logOut();
             $location.path('/registration');
         };
+
+        $scope.$on('back', function () {
+            $scope.exit();
+        });
     })
 
-    .controller('SettingsCtrl', function ($scope, $location, Player) {
+    .controller('SettingsCtrl', function ($scope) {
+        $scope.$on('back', function () {
+            history.back();
+        });
     })
 
-    .controller('RatingCtrl', function ($scope, $http, socket) {
+    .controller('RatingCtrl', function ($scope, $http, $location, socket) {
+        $scope.$on('back', function () {
+            $location.path('/menu');
+        });
 
         socket.emit("player:getRating", {}, function (data) {
             $scope.players = data;
@@ -59,9 +74,10 @@ angular.module('app')
     .controller('TrainingCtrl', ['$scope', 'Application', 'Player', 'socket', function ($scope, Application, Player, socket) {
         var queue;
 
+
         var manifest = [
-            {id: "image_pizza", src: "content/pizza_64.png"},
-            {id: "image_poo", src: "content/poo_64.gif"}
+            {id: "image_bird", src: "content/flying/bird.png"},
+            {id: "image_book", src: "content/flying/book.png"}
         ];
 
         var successShotPoints;
@@ -124,7 +140,7 @@ angular.module('app')
             createjs.Ticker.addEventListener("tick", $scope.updateStage);
         }
 
-        var IMAGE_SIZE = 64;
+        var IMAGE_SIZE = 32;
 
         $scope.adjustBorderlineCoordinate = function (point) {
             if (point.x == 0) {
@@ -170,8 +186,8 @@ angular.module('app')
         var queue;
 
         var manifest = [
-            {id: "image_pizza", src: "content/pizza_64.png"},
-            {id: "image_poo", src: "content/poo_64.gif"}
+            {id: "image_bird", src: "content/flying/bird.png"},
+            {id: "image_book", src: "content/flying/book.png"}
         ];
 
         $scope.duel = Application.getCurrentDuel();
@@ -206,12 +222,12 @@ angular.module('app')
         }
 
         var objects = [
-            {id: 1, type: 'image_pizza', delayTimeMillis: 200, availableMillis: 7000, from: {x: 0, y: 150}, to: {x: 800, y: 300}},
-            {id: 2, type: 'image_poo', delayTimeMillis: 700, availableMillis: 7500, from: {x: 100, y: 0}, to: {x: 800, y: 200}},
-            {id: 3, type: 'image_poo', delayTimeMillis: 1000, availableMillis: 6000, from: {x: 300, y: 0}, to: {x: 800, y: 600}},
-            {id: 4, type: 'image_pizza', delayTimeMillis: 2100, availableMillis: 6500, from: {x: 800, y: 50}, to: {x: 200, y: 600}},
-            {id: 5, type: 'image_poo', delayTimeMillis: 2000, availableMillis: 5700, from: {x: 800, y: 40}, to: {x: 0, y: 550}},
-            {id: 6, type: 'image_pizza', delayTimeMillis: 3000, availableMillis: 5900, from: {x: 500, y: 0}, to: {x: 0, y: 600}}
+            {id: 1, type: 'image_bird', delayTimeMillis: 200, availableMillis: 7000, from: {x: 0, y: 150}, to: {x: 800, y: 300}},
+            {id: 2, type: 'image_book', delayTimeMillis: 700, availableMillis: 7500, from: {x: 100, y: 0}, to: {x: 800, y: 200}},
+            {id: 3, type: 'image_book', delayTimeMillis: 1000, availableMillis: 6000, from: {x: 300, y: 0}, to: {x: 800, y: 600}},
+            {id: 4, type: 'image_bird', delayTimeMillis: 2100, availableMillis: 6500, from: {x: 800, y: 50}, to: {x: 200, y: 600}},
+            {id: 5, type: 'image_book', delayTimeMillis: 2000, availableMillis: 5700, from: {x: 800, y: 40}, to: {x: 0, y: 550}},
+            {id: 6, type: 'image_bird', delayTimeMillis: 3000, availableMillis: 5900, from: {x: 500, y: 0}, to: {x: 0, y: 600}}
         ]
 
         var objectIdToObjectMap = {};
@@ -242,7 +258,7 @@ angular.module('app')
             createjs.Ticker.addEventListener("tick", $scope.updateStage);
         }
 
-        var IMAGE_SIZE = 64;
+        var IMAGE_SIZE = 32;
 
         $scope.adjustBorderlineCoordinate = function (point) {
             if (point.x == 0) {
@@ -300,7 +316,7 @@ angular.module('app')
         $scope.init();
     }])
 
-    .controller('DuelCtrl', ['$scope', '$window', '$location', 'Application', function ($scope, $window, $location, Application) {
+    .controller('DuelWaitCtrl', ['$scope', '$window', '$location', 'Application', function ($scope, $window, $location, Application) {
         Application.setupDuel();
 
         $scope.$on('duel:joined', function (event, duelId) {

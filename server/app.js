@@ -287,8 +287,8 @@ var BLUE = 'blue';
 var COLORS = [YELLOW, RED, GREEN, BLUE];
 
 var OBJECTS_LIST = [
-    {type : 'image_pizza', isEatable : true, color : YELLOW},
-    {type : 'image_poo', isEatable : false, color : RED}
+    {type : 'image_bird', isEatable : false, color : BLUE},
+    {type : 'image_book', isEatable : false, color : BLUE}
 ];
 
 var OBJECTS_PER_SECOND = 4;

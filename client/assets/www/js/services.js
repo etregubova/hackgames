@@ -38,22 +38,8 @@ angular.module('app')
         }
     })
 
-    .factory('Application', ['$rootScope', 'socket', function ($rootScope, socket) {
-
-        var gameFieldSize = {};
-
+    .factory('Application', function ($rootScope, socket) {
         var service = {
-            setFieldSize: function (canvasWidth, canvasHeight) {
-                gameFieldSize.width = canvasWidth;
-                gameFieldSize.height = canvasHeight;
-
-                socket.emit('game:size', {width: canvasWidth, height: canvasHeight});
-            },
-
-            getFieldSize: function () {
-                return gameFieldSize;
-            },
-
             setupDuel: function () {
                 socket.emit('duel:join');
             },
@@ -86,4 +72,4 @@ angular.module('app')
         });
 
         return service;
-    }]);
+    });

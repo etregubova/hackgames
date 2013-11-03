@@ -1,15 +1,23 @@
-<div class="panel panel-default" ng-init="getScenario()">
-    <div class="panel-heading">
-        Очки : <span class="badge">{{score}}</span>
-        <span class="pull-right" timer="30"></span><!-- TODO: handle from scenario -->
-    </div>
-    <div class="panel-body">
-        <canvas id="gameCanvas" class="panel-body" field>
-            Your browser does not support canvas
-        </canvas>
-        <div rules="rounds"></div>
-        <a href=""><img src="img/rainbow.png"/></a>
-        :
-        <a href=""><img src="img/spoon.png"/></a>
+<div class="container">
+    <div class="well">
+        <h5>Очки: <span class="badge">{{score}}</span><span class="pull-right" timer="30"></span></h5>
+        <hr>
+
+        <div class="row">
+            <div class="col-md-4"></div>
+            <div class="col-md-4">
+                <div>
+                    <canvas id="gameCanvas" field>
+                        Your browser does not support canvas
+                    </canvas>
+                </div>
+                <div>
+                    <a href=""><img src="img/rainbow.png"/></a>
+                    :
+                    <a href=""><img src="img/spoon.png"/></a>
+                </div>
+            </div>
+            <div class="col-md-4"></div>
+        </div>
     </div>
 </div>
