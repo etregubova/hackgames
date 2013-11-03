@@ -293,8 +293,53 @@ var BLUE = 'blue';
 var COLORS = [YELLOW, RED, GREEN, BLUE];
 
 var OBJECTS_LIST = [
-    {type: 'image_bird', isEatable: false, color: BLUE},
-    {type: 'image_book', isEatable: false, color: BLUE}
+    {type: "b0-angry-bird", isEatable: false, color: BLUE},
+    {type: "b0-bus", isEatable: false, color: BLUE},
+    {type: "b0-dolphin", isEatable: false, color: BLUE},
+    {type: "b0-smurf", isEatable: false, color: BLUE},
+    {type: "b0-teapot", isEatable: false, color: BLUE},
+
+    {type: "b1-berries", isEatable: true, color: BLUE},
+    {type: "b1-blueberry", isEatable: true, color: BLUE},
+    {type: "b1-eggplant", isEatable: true, color: BLUE},
+    {type: "b1-cake", isEatable: true, color: BLUE},
+    {type: "b1-water", isEatable: true, color: BLUE},
+
+    {type: "g0-angry-bird", isEatable: false, color: GREEN},
+    {type: "g0-bus", isEatable: false, color: GREEN},
+    {type: "g0-chess", isEatable: false, color: GREEN},
+    {type: "g0-dolphin", isEatable: false, color: GREEN},
+    {type: "g0-ninja", isEatable: false, color: GREEN},
+
+    {type: "g1-apple", isEatable: true, color: GREEN},
+    {type: "g1-brokkoli", isEatable: true, color: GREEN},
+    {type: "g1-grapes", isEatable: true, color: GREEN},
+    {type: "g1-lemon", isEatable: true, color: GREEN},
+    {type: "g1-watermelon", isEatable: true, color: GREEN},
+
+    {type: "r0-angry-bird", isEatable: false, color: RED},
+    {type: "r0-bus", isEatable: false, color: RED},
+    {type: "r0-chess", isEatable: false, color: RED},
+    {type: "r0-frog", isEatable: false, color: RED},
+    {type: "r0-ladybug", isEatable: false, color: RED},
+
+    {type: "r1-apple", isEatable: true, color: RED},
+    {type: "r1-cake", isEatable: true, color: RED},
+    {type: "r1-cherries", isEatable: true, color: RED},
+    {type: "r1-strawberry", isEatable: true, color: RED},
+    {type: "r1-tomato", isEatable: true, color: RED},
+
+    {type: "y0-angry-bird", isEatable: false, color: YELLOW},
+    {type: "y0-bus", isEatable: false, color: YELLOW},
+    {type: "y0-chess", isEatable: false, color: YELLOW},
+    {type: "y0-frog", isEatable: false, color: YELLOW},
+    {type: "y0-lampbulb", isEatable: false, color: YELLOW},
+
+    {type: "y1-banana", isEatable: true, color: YELLOW},
+    {type: "y1-cake", isEatable: true, color: YELLOW},
+    {type: "y1-fries", isEatable: true, color: YELLOW},
+    {type: "y1-honey", isEatable: true, color: YELLOW},
+    {type: "y1-lemon", isEatable: true, color: YELLOW}
 ];
 
 var OBJECTS_PER_SECOND = 4;

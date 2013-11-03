@@ -75,10 +75,54 @@ angular.module('app')
     .controller('TrainingCtrl', ['$scope', 'Application', 'Player', 'socket', function ($scope, Application, Player, socket) {
         var queue;
 
-
         var manifest = [
-            {id: "image_bird", src: "content/flying/bird.png"},
-            {id: "image_book", src: "content/flying/book.png"}
+            {id: "b0-angry-bird", src: "content/flying/b0-angry-bird.png"},
+            {id: "b0-bus", src: "content/flying/b0-bus.png"},
+            {id: "b0-dolphin", src: "content/flying/b0-dolphin.png"},
+            {id: "b0-smurf", src: "content/flying/b0-smurf.png"},
+            {id: "b0-teapot", src: "content/flying/b0-teapot.png"},
+
+            {id: "b1-berries", src: "content/flying/b1-berries.png"},
+            {id: "b1-blueberry", src: "content/flying/b1-blueberry.png"},
+            {id: "b1-eggplant", src: "content/flying/b1-eggplant.png"},
+            {id: "b1-cake", src: "content/flying/b1-cake.png"},
+            {id: "b1-water", src: "content/flying/b1-water.png"},
+
+            {id: "g0-angry-bird", src: "content/flying/g0-angry-bird.png"},
+            {id: "g0-bus", src: "content/flying/g0-bus.png"},
+            {id: "g0-chess", src: "content/flying/g0-chess.png"},
+            {id: "g0-dolphin", src: "content/flying/g0-dolphin.png"},
+            {id: "g0-ninja", src: "content/flying/g0-ninja.png"},
+
+            {id: "g1-apple", src: "content/flying/g1-apple.png"},
+            {id: "g1-brokkoli", src: "content/flying/g1-brokkoli.png"},
+            {id: "g1-grapes", src: "content/flying/g1-grapes.png"},
+            {id: "g1-lemon", src: "content/flying/g1-lemon.png"},
+            {id: "g1-watermelon", src: "content/flying/g1-watermelon.png"},
+
+            {id: "r0-angry-bird", src: "content/flying/r0-angry-bird.png"},
+            {id: "r0-bus", src: "content/flying/r0-bus.png"},
+            {id: "r0-chess", src: "content/flying/r0-chess.png"},
+            {id: "r0-frog", src: "content/flying/r0-frog.png"},
+            {id: "r0-ladybug", src: "content/flying/r0-ladybug.png"},
+
+            {id: "r1-apple", src: "content/flying/r1-apple.png"},
+            {id: "r1-cake", src: "content/flying/r1-cake.png"},
+            {id: "r1-cherries", src: "content/flying/r1-cherries.png"},
+            {id: "r1-strawberry", src: "content/flying/r1-strawberry.png"},
+            {id: "r1-tomato", src: "content/flying/r1-tomato.png"},
+
+            {id: "y0-angry-bird", src: "content/flying/y0-angry-bird.png"},
+            {id: "y0-bus", src: "content/flying/y0-bus.png"},
+            {id: "y0-chess", src: "content/flying/y0-chess.png"},
+            {id: "y0-frog", src: "content/flying/y0-frog.png"},
+            {id: "y0-lampbulb", src: "content/flying/y0-lampbulb.png"},
+
+            {id: "y1-banana", src: "content/flying/y0-banana.png"},
+            {id: "y1-cake", src: "content/flying/y0-cake.png"},
+            {id: "y1-fries", src: "content/flying/y0-fries.png"},
+            {id: "y1-honey", src: "content/flying/y0-honey.png"},
+            {id: "y1-lemon", src: "content/flying/y0-lemon.png"}
         ];
 
         var successShotPoints;
@@ -187,8 +231,53 @@ angular.module('app')
         var queue;
 
         var manifest = [
-            {id: "image_bird", src: "content/flying/bird.png"},
-            {id: "image_book", src: "content/flying/book.png"}
+            {id: "b0-angry-bird", src: "content/flying/b0-angry-bird.png"},
+            {id: "b0-bus", src: "content/flying/b0-bus.png"},
+            {id: "b0-dolphin", src: "content/flying/b0-dolphin.png"},
+            {id: "b0-smurf", src: "content/flying/b0-smurf.png"},
+            {id: "b0-teapot", src: "content/flying/b0-teapot.png"},
+
+            {id: "b1-berries", src: "content/flying/b1-berries.png"},
+            {id: "b1-blueberry", src: "content/flying/b1-blueberry.png"},
+            {id: "b1-eggplant", src: "content/flying/b1-eggplant.png"},
+            {id: "b1-cake", src: "content/flying/b1-cake.png"},
+            {id: "b1-water", src: "content/flying/b1-water.png"},
+
+            {id: "g0-angry-bird", src: "content/flying/g0-angry-bird.png"},
+            {id: "g0-bus", src: "content/flying/g0-bus.png"},
+            {id: "g0-chess", src: "content/flying/g0-chess.png"},
+            {id: "g0-dolphin", src: "content/flying/g0-dolphin.png"},
+            {id: "g0-ninja", src: "content/flying/g0-ninja.png"},
+
+            {id: "g1-apple", src: "content/flying/g1-apple.png"},
+            {id: "g1-brokkoli", src: "content/flying/g1-brokkoli.png"},
+            {id: "g1-grapes", src: "content/flying/g1-grapes.png"},
+            {id: "g1-lemon", src: "content/flying/g1-lemon.png"},
+            {id: "g1-watermelon", src: "content/flying/g1-watermelon.png"},
+
+            {id: "r0-angry-bird", src: "content/flying/r0-angry-bird.png"},
+            {id: "r0-bus", src: "content/flying/r0-bus.png"},
+            {id: "r0-chess", src: "content/flying/r0-chess.png"},
+            {id: "r0-frog", src: "content/flying/r0-frog.png"},
+            {id: "r0-ladybug", src: "content/flying/r0-ladybug.png"},
+
+            {id: "r1-apple", src: "content/flying/r1-apple.png"},
+            {id: "r1-cake", src: "content/flying/r1-cake.png"},
+            {id: "r1-cherries", src: "content/flying/r1-cherries.png"},
+            {id: "r1-strawberry", src: "content/flying/r1-strawberry.png"},
+            {id: "r1-tomato", src: "content/flying/r1-tomato.png"},
+
+            {id: "y0-angry-bird", src: "content/flying/y0-angry-bird.png"},
+            {id: "y0-bus", src: "content/flying/y0-bus.png"},
+            {id: "y0-chess", src: "content/flying/y0-chess.png"},
+            {id: "y0-frog", src: "content/flying/y0-frog.png"},
+            {id: "y0-lampbulb", src: "content/flying/y0-lampbulb.png"},
+
+            {id: "y1-banana", src: "content/flying/y0-banana.png"},
+            {id: "y1-cake", src: "content/flying/y0-cake.png"},
+            {id: "y1-fries", src: "content/flying/y0-fries.png"},
+            {id: "y1-honey", src: "content/flying/y0-honey.png"},
+            {id: "y1-lemon", src: "content/flying/y0-lemon.png"}
         ];
 
         $scope.duel = Application.getCurrentDuel();
