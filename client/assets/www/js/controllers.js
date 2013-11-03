@@ -470,6 +470,7 @@ angular.module('app')
             $location.path('/menu');
         };
     })
+
     .controller('SplashCtrl', ['$location', function ($location) {
         document.addEventListener('deviceready', function () {
             document.addEventListener("backbutton", function () {

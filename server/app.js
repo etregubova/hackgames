@@ -20,6 +20,7 @@ app.all("/api/*", function (req, res, next) {
 var players = [];
 var duelID = 0;
 var duels = [];
+var currentWaitingDuel = null;
 
 var getPlayerByName = function (name) {
     //TODO cache for better performance
@@ -50,21 +51,14 @@ var removePlayer = function (playerName) {
     }
 };
 
-var removeDuel = function (duelToRemove) {
-    for (var index = 0; index < duels.length; ++index) {
-        var duel = duels[index];
-        if (duel.id == duelToRemove.id) {
-            duels.splice(index, 1);
-        }
-    }
-};
-
 io.sockets.on('connection', function (socket) {
 
     socket.on('disconnect', function () {
 
         socket.get('player', function (err, playerName) {
             console.log('Event received "player:disconnected "' + playerName);
+
+            clearPlayerWaitingDuels(playerName);
             removePlayer(playerName);
         });
     });
@@ -86,6 +80,8 @@ io.sockets.on('connection', function (socket) {
 
     socket.on('player:removed', function (playerName, callback) {
         console.log('Event received "player:removed "' + playerName);
+
+        clearPlayerWaitingDuels(playerName);
         removePlayer(playerName);
         callback();
     });
@@ -98,25 +94,63 @@ io.sockets.on('connection', function (socket) {
     socket.on('player:get', function (playerName, callback) {
         console.log('Event received "player:get" ' + playerName);
 
-        for (var index = 0; index < teams.length; ++index) {
-            if (players[index].name === playerName) {
-                callback(players[index]);
-                return;
-            }
-        }
+        callback(getPlayerByName(playerName));
     });
 
     socket.on('duel:join', function (data, callback) {
         console.log('Event received duel:join');
 
-        handleDuelRequest(socket, callback)
+        socket.get('player', function (err, playerName) {
+
+            if (currentWaitingDuel) {           //there is a waiting duel
+                var newDuel = currentWaitingDuel;
+                currentWaitingDuel = null;
+
+                if (newDuel.player1.name == playerName) {
+                    console.log("IT LOOKS LIKE AN ATTEMPT TO PLAY WITH MYSELF " + playerName)
+                }
+                newDuel.status = 'started';
+                newDuel.player2 = {};
+                newDuel.player2.name = playerName;
+                newDuel.player2.score = 0;
+                var gameFieldSize = {width: 250, height: 250};
+                newDuel.scenario = generateScenario(gameFieldSize);
+
+                duels.push(newDuel);
+
+                callback(newDuel);
+                io.sockets.emit('duel:start', newDuel);
+            } else {                            //there is no waiting duels
+                currentWaitingDuel = {status: 'waiting'};
+                currentWaitingDuel.id = duelID++;
+                currentWaitingDuel.player1 = {};
+                currentWaitingDuel.player1.name = playerName;
+                currentWaitingDuel.player1.score = 0;
+
+                duels.push(currentWaitingDuel);
+
+                callback(currentWaitingDuel)
+            }
+        });
     });
 
     socket.on('duel:cancel', function (data, callback) {
         console.log('Event received duel:cancel');
 
-        cancelDuelRequest(socket, callback)
+        socket.get('player', function (err, playerName) {
+            clearPlayerWaitingDuels(playerName);
+            callback();
+        })
     });
+
+
+    function clearPlayerWaitingDuels(playerName) {
+        if (currentWaitingDuel) {
+            if (currentWaitingDuel.player1.name == playerName) {
+                currentWaitingDuel = null;
+            }
+        }
+    }
 
     //pitergrad game
 
@@ -153,18 +187,21 @@ io.sockets.on('connection', function (socket) {
         if (duel.status != 'completed') { //we should update rating only once
             duel.status = 'completed';
             //update rating
-            if (duel.player1) {
+            if (duel.player1.name && duel.player1.score) {
                 var firstPlayer = getPlayerByName(duel.player1.name);
                 firstPlayer.score += duel.player1.score;
                 firstPlayer.tournaments++;
+            } else {
+                console.log("WE SHOULDN'T BE HERE " + duel.id);
             }
-            if (duel.player2) {
+            if (duel.player2.name && duel.player2.score) {
                 var secondPlayer = getPlayerByName(duel.player2.name);
                 secondPlayer.score += duel.player2.score;
                 secondPlayer.tournaments++;
+            } else {
+                console.log("WE SHOULDN'T BE HERE " + duel.id);
             }
             io.sockets.emit('duel:end', duel.id);
-//            removeDuel(duel);
             io.sockets.emit('rating:updated', players)
         }
         callback();
@@ -186,75 +223,11 @@ io.sockets.on('connection', function (socket) {
     socket.on('game:training', function (object, callback) {
         console.log('Event received game:training');
 
-        /*! Temporary it was decided to set default gameFieldSize 250x250, uncomment this block if needed:
-         var gameFieldSize;
-         socket.get('player', function (err, playerName) {
-         console.log('Event :' + playerName);
-
-         for (var index = 0; index < players.length; ++index) {
-         if (players[index].name === playerName) {
-         gameFieldSize = players[index].gameFieldSize;
-         break;
-         }
-         }
-         });
-         */
         var gameFieldSize = {width: 250, height: 250};
         callback(generateScenario(gameFieldSize));
     });
 
 });
-
-function handleDuelRequest(socket, callback) {
-    socket.get('player', function (err, playerName) {
-        var notStartedDuels = duels.filter(function (duel) {
-            return duel.status === 'waiting';
-        });
-
-        if (notStartedDuels.length > 0) {
-            var duel = notStartedDuels[0];
-
-            duel.status = 'started';
-            duel.player2 = {};
-            duel.player2.name = playerName;
-            duel.player2.score = 0;
-
-            var gameFieldSize = {width: 250, height: 250};
-            duel.scenario = generateScenario(gameFieldSize);
-            console.log(duel);
-
-            callback(duel)
-            io.sockets.emit('duel:start', duel);
-        } else {
-            var duel = {status: 'waiting'};
-            duel.id = duelID++;
-            duel.player1 = {};
-            duel.player1.name = playerName;
-            duel.player1.score = 0;
-
-            duels.push(duel);
-
-            callback(duel)
-        }
-
-        console.log(duels);
-    });
-}
-
-function cancelDuelRequest(socket, callback) {
-    socket.get('player', function (err, playerName) {
-        for (var index = 0; index < duels.length; ++index) {
-            var duel = duels[index];
-            if (duel.player1.name == playerName && duel.status == 'waiting') {
-                duels.splice(index, 1);
-                callback();
-                return;
-            }
-        }
-    });
-
-    console.log(duels);
-}
 
 
 /**
