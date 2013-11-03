@@ -97,10 +97,10 @@ io.sockets.on('connection', function (socket) {
         }
     });
 
-    socket.on('duel:join', function () {
+    socket.on('duel:join', function (data, callback) {
         console.log('Event received duel:join');
 
-        handleDuelRequest(socket)
+        handleDuelRequest(socket, callback)
     });
 
     socket.on('duel:cancel', function (data, callback) {
@@ -188,7 +188,7 @@ io.sockets.on('connection', function (socket) {
 
 });
 
-function handleDuelRequest(socket) {
+function handleDuelRequest(socket, callback) {
     socket.get('player', function (err, playerName) {
         var notStartedDuels = duels.filter(function (duel) {
             return duel.status === 'waiting';
@@ -196,34 +196,17 @@ function handleDuelRequest(socket) {
 
         if (notStartedDuels.length > 0) {
             var duel = notStartedDuels[0];
-            socket.emit('duel:joined', duel.id);
 
             duel.status = 'started';
-
             duel.player2 = {};
             duel.player2.name = playerName;
             duel.player2.score = 0;
 
-//            Temporary it was decided to set default gameFieldSize 250x250, uncomment this block if needed:
-//            var gameFieldSize1;
-//            var gameFieldSize2;
-//            for (var index = 0; index < players.length; index++) {
-//                if (players[index].name === duel.player1.name) {
-//                    gameFieldSize1 = players[index].gameFieldSize;
-//                }
-//                if (players[index].name === duel.player2.name) {
-//                    gameFieldSize2 = players[index].gameFieldSize;
-//                }
-//            }
             var gameFieldSize = {width: 250, height: 250};
             duel.scenario = generateScenario(gameFieldSize);
-//            duel.scenarios = new Array();
-//            var scenario1 = generateScenario(gameFieldSize1);
-//            duel.scenarios[duel.player1.name] = scenario1;
-//            duel.scenarios[duel.player2.name] = resizeScenario(scenario1, gameFieldSize1, gameFieldSize2);
-
             console.log(duel);
 
+            callback(duel)
             io.sockets.emit('duel:start', duel);
         } else {
             var duel = {status: 'waiting'};
@@ -234,7 +217,7 @@ function handleDuelRequest(socket) {
 
             duels.push(duel);
 
-            socket.emit('duel:joined', duel.id);
+            callback(duel)
         }
 
         console.log(duels);

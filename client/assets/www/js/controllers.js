@@ -443,14 +443,8 @@ angular.module('app')
     .controller('DuelWaitCtrl', ['$scope', '$window', '$location', 'Application', function ($scope, $window, $location, Application) {
         Application.setupDuel();
 
-        $scope.$on('duel:joined', function (event, duelId) {
-            $scope.duelId = duelId;
-        });
-
         $scope.$on('duel:start', function (event, duel) {
-            if ($scope.duelId === duel.id) {
-                $location.path('/duel/play')
-            }
+            $location.path('/duel/play')
         });
 
         $scope.cancel = function () {

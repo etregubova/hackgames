@@ -41,14 +41,22 @@ angular.module('app')
         }
     })
 
-    .factory('Application', function ($rootScope, socket) {
+    .factory('Application', function ($rootScope, socket, Player) {
         var service = {
             setupDuel: function () {
-                socket.emit('duel:join');
+                socket.emit('duel:join', {}, function (duel) {
+                    if (duel.status == 'started') {
+                        currentDuel = duel;
+                        $rootScope.$broadcast('duel:start', duel);
+                    } else if (duel.status == 'waiting') {
+                        currentDuel = duel;
+                    }
+                });
             },
 
             cancelDuel: function (callback) {
                 socket.emit('duel:cancel', {}, function () {
+                    currentDuel = null;
                     callback();
                 });
             },
@@ -65,13 +73,11 @@ angular.module('app')
 
         var currentDuel;
 
-        socket.on('duel:joined', function (duelId) {
-            $rootScope.$broadcast('duel:joined', duelId);
-        });
-
         socket.on('duel:start', function (duel) {
-            currentDuel = duel;
-            $rootScope.$broadcast('duel:start', duel);
+            if (duel.player1.name == Player.getPlayer().name && currentDuel.id == duel.id) {
+                currentDuel = duel;
+                $rootScope.$broadcast('duel:start', duel);
+            }
         });
 
         return service;
