@@ -10,9 +10,10 @@ angular.module('app')
 
         $scope.hide = function () {
             return $location.path() === '/registration' ||
-                $location.path() === '/duel/wait' ||
+                $location.path() === '/duel' ||
                 $location.path() === '/training' ||
-                $location.path() === '/duel/play';
+                $location.path() === '/duel/play' ||
+                $location.path() === '/duel/result';
         };
     })
 
@@ -196,7 +197,7 @@ angular.module('app')
             socket.emit("game:pitergrad:end", {
                 duelId: Application.getCurrentDuel().id
             }, function () {
-                $location.path("/rating")
+                $location.path("/duel/result")
             });
         });
         /*!
@@ -339,6 +340,21 @@ angular.module('app')
         };
     }])
 
+    .controller('DuelResultCtrl', function ($scope, $location, Application) {
+        $scope.duel = Application.getCurrentDuel();
+
+        $scope.repeat = function () {
+            $location.path('/duel/wait');
+        };
+
+        $scope.rating = function () {
+            $location.path('/rating');
+        };
+
+        $scope.menu = function () {
+            $location.path('/menu');
+        };
+    })
     .controller('SplashCtrl', ['$location', function ($location) {
         document.addEventListener('deviceready', function () {
             document.addEventListener("backbutton", function () {

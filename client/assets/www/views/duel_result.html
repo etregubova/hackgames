@@ -1,0 +1,27 @@
+<div class="container">
+    <div class="well">
+        <h5>Результат дуэли</h5>
+        <hr>
+
+        <table class="table table-striped" ng-model="duel">
+            <thead>
+            <tr>
+                <th>{{player1.name}}</th>
+                <th>{{player2.name}}</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>{{player1.score}}</td>
+                <td>{{player2.score}}</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="btn-group">
+            <button class="btn btn-success" type="button" ng-click='repeat()'>Еще раз</button>
+            <button class="btn btn-info" type="button" ng-click='rating()'>Рейтинг</button>
+            <button class="btn btn-default" type="button" ng-click='menu()'>Меню</button>
+        </div>
+    </div>
+</div>

@@ -12,9 +12,9 @@ angular.module('app', [
         $routeProvider.when('/menu', {templateUrl: 'views/menu.html', controller: 'MenuCtrl'});
         $routeProvider.when('/settings', {templateUrl: 'views/settings.html', controller: 'SettingsCtrl'});
         $routeProvider.when('/rating', {templateUrl: 'views/rating.html', controller: 'RatingCtrl'});
-        $routeProvider.when('/tournament', {templateUrl: 'views/tournament.html', controller: 'TournamentCtrl'});
-        $routeProvider.when('/duel/wait', {templateUrl: 'views/wait.html', controller: 'DuelWaitCtrl'});
+        $routeProvider.when('/duel', {templateUrl: 'views/wait.html', controller: 'DuelWaitCtrl'});
         $routeProvider.when('/duel/play', {templateUrl: 'views/duel.html', controller: 'DuelGameCtrl'});
+        $routeProvider.when('/duel/result', {templateUrl: 'views/duel_result.html', controller: 'DuelResultCtrl'});
         $routeProvider.when('/training', {templateUrl: 'views/training.html', controller: 'TrainingCtrl'});
         $routeProvider.otherwise({redirectTo: '/registration'});
     }]).
