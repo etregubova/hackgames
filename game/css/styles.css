@@ -1,0 +1,9 @@
+@font-face
+{
+    font-family: customFont;
+    src: url('../fonts/comic2.ttf');
+}
+
+body {
+    font-family: customFont;
+}
