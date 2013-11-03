@@ -144,21 +144,27 @@ io.sockets.on('connection', function (socket) {
         touchEvent.duel = duel;
 
         //TODO send only to players in current duel. It will be better for performance
+        //DO NOT CHANGE
         io.sockets.emit('game:pitergrad:touch', touchEvent)
     });
 
     socket.on('game:pitergrad:end', function (data, callback) {
         var duel = getDuelById(data.duelId);
-        if (duel) { //duel can be removed by first player
+        if (duel.status != 'completed') { //we should update rating only once
             duel.status = 'completed';
             //update rating
-            var firstPlayer = getPlayerByName(duel.player1.name);
-            var secondPlayer = getPlayerByName(duel.player2.name);
-            firstPlayer.score += duel.player1.score;
-            firstPlayer.tournaments++;
-            secondPlayer.score += duel.player2.score;
-            secondPlayer.tournaments++;
-            removeDuel(duel);
+            if (duel.player1) {
+                var firstPlayer = getPlayerByName(duel.player1.name);
+                firstPlayer.score += duel.player1.score;
+                firstPlayer.tournaments++;
+            }
+            if (duel.player2) {
+                var secondPlayer = getPlayerByName(duel.player2.name);
+                secondPlayer.score += duel.player2.score;
+                secondPlayer.tournaments++;
+            }
+            io.sockets.emit('duel:end', duel.id);
+//            removeDuel(duel);
             io.sockets.emit('rating:updated', players)
         }
         callback();
