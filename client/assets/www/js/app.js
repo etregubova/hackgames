@@ -18,7 +18,15 @@ angular.module('app', [
         $routeProvider.when('/training', {templateUrl: 'views/training.html', controller: 'TrainingCtrl'});
         $routeProvider.otherwise({redirectTo: '/registration'});
     }]).
-    constant('server', "http://172.17.4.115:3000")
-    .run(function ($http, server) {
-        //do nothing now
+    constant('server', "http://172.17.5.145:3000")
+    .run(function ($http, server, socket, Player) {
+        document.addEventListener("deviceready", function () {
+            document.addEventListener("backbutton", function () {
+                var player = Player.getPlayer();
+                if (player != null && player != undefined) {
+                    socket.emit('player:removed', player.name);
+                }
+                navigator.app.exitApp();
+            }, false);
+        }, false);
     });
